@@ -1,4 +1,6 @@
 source https://api.nuget.org/v3/index.json
 
 
-nuget FSharp.Compiler.Service
+nuget FSharp.Compiler.Service >= 6
+nuget FSharp.Compiler.Service.ProjectCracker >= 6
+nuget WebSharper
