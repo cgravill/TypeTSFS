@@ -82,7 +82,6 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="..\.paket\paket.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3')">
       <ItemGroup>
@@ -513,4 +512,5 @@
     </When>
   </Choose>
   <Import Project="..\packages\FSharp.Compiler.Service.ProjectCracker\build\$(__paket__FSharp_Compiler_Service_ProjectCracker_targets).targets" Condition="Exists('..\packages\FSharp.Compiler.Service.ProjectCracker\build\$(__paket__FSharp_Compiler_Service_ProjectCracker_targets).targets')" Label="Paket" />
+  <Import Project="..\.paket\paket.targets" />
 </Project>

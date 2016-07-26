@@ -108,4 +108,5 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
+  <Import Project="..\.paket\paket.targets" />
 </Project>

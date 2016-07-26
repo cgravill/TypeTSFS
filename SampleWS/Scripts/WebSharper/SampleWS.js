@@ -1,9 +1,9 @@
 (function()
 {
- var Global=this,Runtime=this.IntelliFactory.Runtime,JSON,Json,Provider,Id,console,SampleWS,Main,CustomGeneric;
+ var Global=this,Runtime=this.IntelliFactory.Runtime,JSON,Json,Provider,Id,console,SampleWS,JSAPI,CustomGeneric;
  Runtime.Define(Global,{
   SampleWS:{
-   Main:{
+   JSAPI:{
     CustomGeneric:Runtime.Class({},{
      New:function()
      {
@@ -56,12 +56,12 @@
   Id=Runtime.Safe(Provider.Id);
   console=Runtime.Safe(Global.console);
   SampleWS=Runtime.Safe(Global.SampleWS);
-  Main=Runtime.Safe(SampleWS.Main);
-  return CustomGeneric=Runtime.Safe(Main.CustomGeneric);
+  JSAPI=Runtime.Safe(SampleWS.JSAPI);
+  return CustomGeneric=Runtime.Safe(JSAPI.CustomGeneric);
  });
  Runtime.OnLoad(function()
  {
-  Main.something();
+  JSAPI.something();
   return;
  });
 }());

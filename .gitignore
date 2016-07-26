@@ -251,3 +251,5 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+SampleWS/Scripts/WebSharper/SampleWS.js
+SampleWS/Scripts/WebSharper/SampleWS.min.js
