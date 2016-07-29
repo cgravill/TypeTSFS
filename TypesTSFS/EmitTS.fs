@@ -122,5 +122,5 @@ let argumentsToString (arguments:IList<IList<FSharpParameter>>) =
 
 let functionAsStrings (functions:seq<FSharpMemberOrFunctionOrValue>) =
     functions
-    |> Seq.map(fun value -> sprintf "interface %s {\n\t(%s):boolean\n}\n" value.CompiledName (argumentsToString value.CurriedParameterGroups))
+    |> Seq.map(fun value -> sprintf "interface %s {\n\t(%s):%s\n}\n" value.CompiledName (argumentsToString value.CurriedParameterGroups) (typeToTS value.ReturnParameter.Type))
     |> String.concat "\n"

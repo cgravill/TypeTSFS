@@ -27,7 +27,6 @@ let main argv =
 
     let projectFile = @"../../../SampleWS/SampleWS.fsproj"
 
-
     let x = ProjectCracker.GetProjectOptionsFromProjectFile(projectFile)
 
     let y = checker.ParseAndCheckProject x |> Async.RunSynchronously
@@ -106,7 +105,9 @@ let main argv =
 
     let functionAsStrings = EmitTS.functionAsStrings jsAPI.MembersFunctionsAndValues
 
-    let all = namespacesAsStrings + "\n\n" + opaqueNamespaces + "\n\n" + functionAsStrings
+    let warning = "//These interfaces are code generated from F#, any changes to this file will be lost."
+
+    let all = warning + "\n\n" + namespacesAsStrings + "\n\n" + opaqueNamespaces + "\n\n" + functionAsStrings
 
     System.IO.File.WriteAllText("output.ts",all)
 

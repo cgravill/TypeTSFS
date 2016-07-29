@@ -7,8 +7,7 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
     //Cache to prevent rework
     let entitiesSeen = System.Collections.Generic.HashSet<FSharpEntity>()
 
-    //This isn't intended for abitrary depth so limit to 10 for now to mitigate cycles.
-    //Changing this from a sequence expression to a fold with work list and cycle detection would be better... TODO
+    //Changing this from a sequence expression to a fold with work list would make it easier to debug... TODO
     let rec innerFind (topEntity:FSharpEntity) : seq<FSharpEntity> =
 
         if entitiesSeen.Contains topEntity then
@@ -38,7 +37,6 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                             |> Seq.concat
 
                 else
-                        //We only want unabbreviated types, easier to deal with later
 
                     if topEntity.IsFSharpRecord && topEntity.FullName <> "Microsoft.FSharp.Core.FSharpRef`1" then
                         yield! topEntity.FSharpFields
@@ -140,6 +138,9 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                             |> Seq.concat
                             |> Seq.concat
                             |> Seq.cache //Debug
+
+
+                    //TODO: handle functions
 
                     if topEntity.IsArrayType then
                         () //Generic arguments have been captured above
