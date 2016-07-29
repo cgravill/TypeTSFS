@@ -60,14 +60,14 @@ let main argv =
 
     let allOfThem =
         jsAPI
-        |> (Explore.allEntities 0)
+        |> Explore.findEntities
         |> Seq.distinct
         |> Seq.sortBy(fun element -> element.DisplayName)
         |> Array.ofSeq
 
     let fewerOfThem =
         jsAPI
-        |> (Explore.allEntities 0)
+        |> Explore.findEntities
         |> Seq.distinct
         |> Seq.filter(fun entity -> not entity.IsFSharpModule && not (isHiddenFunction entity)) 
         |> Seq.filter(fun entity -> not (entity.AccessPath.Contains "System.Collections.Generic") && not (entity.AccessPath.Contains "Microsoft.FSharp.Collections"))
