@@ -61,6 +61,8 @@ let rec typeToTS (fsharpType:FSharpType) =
                 | "string"
                 | "String" -> "string"
                 | "Unit" -> "void"
+                | "Dictionary" -> "Opaque.Dictionary"
+                | "Map" -> "Opaque.FSharpMap"
                 | x -> fsharpType.TypeDefinition.AccessPath + "." + x
 
             if fsharpType.GenericArguments.Count > 0 then
@@ -74,18 +76,6 @@ let main argv =
 
     let entityToString (namespacename:string, nested:FSharpEntity[]) =
        
-        (*let parseFileResults, checkFileResults = 
-            parseAndTypeCheckSingleFile(file, moduleText)
-
-        let moduleEntity = checkFileResults.PartialAssemblySignature.Entities.[0]*)
-
-
-        //let moduleName = topEntity.CompiledName
-
-        //let nested = topEntity.NestedEntities
-
-        
-
         let records = nested |> Seq.filter (fun entity -> entity.IsFSharpRecord)
 
         let recordFieldsToString record = String.concat "\n" (record |> Seq.map (fun (recordField:FSharpField) -> sprintf "\t\t%s: %s;" recordField.DisplayName (typeToTS recordField.FieldType)))
@@ -125,19 +115,22 @@ let main argv =
 
         let casesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map caseAsString |> String.concat "\n"
         let simpleCasesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (fun case -> "\"" + case.DisplayName + "\"") |> String.concat " | "
-        let unionNameToString (union:FSharpEntity) =
-            if union.GenericParameters.Count = 0 then
-                union.DisplayName
+        let entityNameToString (entity:FSharpEntity) =
+            if entity.GenericParameters.Count = 0 then
+                entity.DisplayName
             else
-                union.DisplayName + "<" + (String.concat "," (genericParamtersToDisplay union.GenericParameters)) + ">"
+                entity.DisplayName + "<" + (String.concat "," (genericParamtersToDisplay entity.GenericParameters)) + ">"
 
         let unionsAsString = unions |> Seq.map (fun union -> match union.UnionCases with
-                                                                | Mixture cases -> sprintf "\texport interface %s {\n%s\n\t}" (unionNameToString union) (casesAsString cases)
+                                                                | Mixture cases -> sprintf "\texport interface %s {\n%s\n\t}" (entityNameToString union) (casesAsString cases)
                                                                 | AllJustNames cases -> sprintf "\texport type %s = %s" union.DisplayName (simpleCasesAsString cases))
 
-    
+        
+        let classes = nested |> Seq.filter (fun entity -> entity.IsFSharp && (entity.IsClass || entity.IsInterface))
 
-        let allAsStrings = Seq.append recordsAsStrings unionsAsString
+        let classesAsString = classes |> Seq.map (fun class_ -> sprintf "\texport interface %s {}" (entityNameToString class_))
+
+        let allAsStrings = [classesAsString; recordsAsStrings; unionsAsString] |> Seq.concat
 
         let contents = String.concat "\n" allAsStrings
 
@@ -146,6 +139,7 @@ let main argv =
 
 
     let projectFile = @"../../../SampleWS/SampleWS.fsproj"
+
 
     let x = ProjectCracker.GetProjectOptionsFromProjectFile(projectFile)
 
@@ -158,20 +152,14 @@ let main argv =
 
 
     let argumentsToString (arguments:IList<IList<FSharpParameter>>) =
-
-
-
         arguments
         |> Seq.mapi(fun i parameterGroup -> (namedOrNumber parameterGroup.[0].DisplayName i) + ":" + (typeToTS parameterGroup.[0].Type))
         |> String.concat ", "
 
 
-    let entitiesToExport = System.Collections.Generic.HashSet<int>()
-    let entitiesExported = System.Collections.Generic.HashSet<int>()
+
 
     let namespaceContents = System.Collections.Generic.Dictionary<string, System.Text.StringBuilder>()
-
-    //let typesAsString = entityToString jsAPI
 
     let unabbreviate (possiblyAbbreviated:FSharpEntity) =
         if possiblyAbbreviated.IsFSharpAbbreviation then
@@ -179,27 +167,44 @@ let main argv =
         else
             possiblyAbbreviated
 
-    let mutable all_yielded = Set.empty
+    //Cache to prevent rework
+    let entitiesSeen = System.Collections.Generic.HashSet<FSharpEntity>()
 
-    //This isn't intended for abitrary depth... for now
-    //Changing this from a sequence expression to a fold is probably sensible...
+    //This isn't intended for abitrary depth so limit to 10 for now to mitigate cycles.
+    //Changing this from a sequence expression to a fold with work list and cycle detection would be beteer... TODO
     let rec allEntities (depth:int) (topEntity:FSharpEntity) : seq<FSharpEntity> =
+        
+        if depth = 0 then
+            entitiesSeen.Clear()
 
-        if depth > 10 then
+        if entitiesSeen.Contains topEntity || depth > 10 then
             Seq.empty
         else
+            entitiesSeen.Add topEntity |> ignore
+
             seq {
-                printfn "%A" topEntity.TryFullName
+                //printfn "%A" topEntity.TryFullName
+
+                yield topEntity
 
                 if topEntity.IsFSharpAbbreviation then
                     if topEntity.AbbreviatedType.IsFunctionType then
                         //How to deal with abbreviated functions?
-                        yield topEntity
+                        printfn "%A" topEntity
+                        ()
                     
                     else
+
                         yield! topEntity.AbbreviatedType.TypeDefinition |> (allEntities (depth + 1))
+
+                        yield!
+                            topEntity.AbbreviatedType.GenericArguments
+                            |> Seq.filter (fun argument -> argument.HasTypeDefinition)
+                            |> Seq.map (fun argument -> argument.TypeDefinition |> allEntities (depth + 1))
+                            |> Seq.concat
+
                 else
-                    yield topEntity //We only want unabbreviated types, easier to deal with later
+                     //We only want unabbreviated types, easier to deal with later
 
                     if topEntity.IsFSharpRecord && topEntity.FullName <> "Microsoft.FSharp.Core.FSharpRef`1" then
                         yield! topEntity.FSharpFields
@@ -208,6 +213,7 @@ let main argv =
                                                 |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
                                                 |> Seq.map (fun type2 -> type2.TypeDefinition |> allEntities (depth + 1))
                                                 |> Seq.concat
+                                                |> Seq.cache //Debug
 
 
 
@@ -218,34 +224,92 @@ let main argv =
                                                 |> Seq.map (fun type2 -> type2.GenericArguments
                                                                          |> Seq.filter (fun argument -> argument.HasTypeDefinition)
                                                                          |> Seq.map (fun argument -> argument.TypeDefinition))
-                                                |> Seq.map (fun fields -> fields |> Seq.map (allEntities (depth + 1)))
+                                                |> Seq.map (fun entities -> entities |> Seq.map (allEntities (depth + 1)))
                                                 |> Seq.concat
                                                 |> Seq.concat
+                                                |> Seq.cache //Debug
 
-                    if topEntity.IsFSharpUnion && topEntity.FullName <> "Microsoft.FSharp.Collections.FSharpList`1" && topEntity.FullName <> "Microsoft.FSharp.Core.FSharpOption`1" then
-                        //Also need to do generic arguments, can we share with the record conditional?
+                        yield! topEntity.FSharpFields
+                                                |> Seq.filter (fun field -> not field.FieldType.IsFunctionType)
+                                                |> Seq.map (fun field -> field.FieldType)
+                                                |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
+                                                |> Seq.collect (fun type2 -> type2.GenericArguments)
+                                                |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
+                                                |> Seq.map (fun argument -> argument.GenericArguments
+                                                                                |> Seq.filter (fun argument -> argument.HasTypeDefinition)
+                                                                                |> Seq.map (fun argument -> argument.TypeDefinition))
+                                                |> Seq.map (fun entities -> entities |> Seq.map (allEntities (depth + 1)))
+                                                |> Seq.concat
+                                                |> Seq.concat
+                                                |> Seq.cache //Debug
+
+                    if topEntity.IsFSharpUnion then
                         
+                        
+                        //printfn "%A" topEntity.FullName
+
                         yield! topEntity.UnionCases
-                                    |> Seq.map (fun case -> case.UnionCaseFields
-                                                            |> Seq.map (fun field -> field.FieldType)
+                                |> Seq.map (fun case -> case.UnionCaseFields
+                                                        |> Seq.map (fun field -> field.FieldType)
+                                                        |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
+                                                        |> Seq.map (fun type2 -> type2.TypeDefinition))
+                                |> Seq.map (fun fields -> fields |> Seq.map (allEntities (depth + 1)))
+                                |> Seq.concat
+                                |> Seq.concat
+                                |> Seq.cache //Debug
+
+                    yield!
+                        topEntity.NestedEntities
+                        |> Seq.map (allEntities (depth + 1))
+                        |> Seq.concat
+                        |> Seq.cache //Debug
+
+                    
+
+                    if (topEntity.IsFSharpModule) then
+                        yield!
+                            topEntity.MembersFunctionsAndValues
+                            |> Seq.collect (fun something -> something.CurriedParameterGroups
+                                                            |> Seq.concat
+                                                            |> Seq.map (fun parameter -> parameter.Type)
                                                             |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
                                                             |> Seq.map (fun type2 -> type2.TypeDefinition))
-                                    |> Seq.map (fun fields -> fields |> Seq.map (allEntities (depth + 1)))
-                                    |> Seq.concat
-                                    |> Seq.concat
+                            |> Seq.map (allEntities (depth + 1))
+                            |> Seq.concat
+                            |> Seq.cache //Debug
+
+                        //First generic
+                        yield!
+                            topEntity.MembersFunctionsAndValues
+                            |> Seq.collect (fun something -> something.CurriedParameterGroups
+                                                            |> Seq.concat
+                                                            |> Seq.map (fun parameter -> parameter.Type)
+                                                            |> Seq.map (fun type2 -> type2.GenericArguments
+                                                                                        |> Seq.filter (fun argument -> argument.HasTypeDefinition)
+                                                                                        |> Seq.map (fun argument -> argument.TypeDefinition)))
+                            |> Seq.map (fun fields -> fields |> Seq.map (allEntities (depth + 1)))
+                            |> Seq.concat
+                            |> Seq.concat
+                            |> Seq.cache //Debug
+
+                        //second generic
+                        yield!
+                            topEntity.MembersFunctionsAndValues
+                            |> Seq.collect (fun something -> something.CurriedParameterGroups
+                                                            |> Seq.concat
+                                                            |> Seq.map (fun parameter -> parameter.Type)
+                                                            |> Seq.collect (fun type2 -> type2.GenericArguments)
+                                                            |> Seq.map (fun type2 -> type2.GenericArguments
+                                                                                        |> Seq.filter (fun argument -> argument.HasTypeDefinition)
+                                                                                        |> Seq.map (fun argument -> argument.TypeDefinition)))
+                            |> Seq.map (fun fields -> fields |> Seq.map (allEntities (depth + 1)))
+                            |> Seq.concat
+                            |> Seq.concat
+                            |> Seq.cache //Debug
 
                     if topEntity.IsArrayType then
-                        printfn "Got array: %A" topEntity
-                    //Handle arrays
+                        () //Generic arguments have been captured above
 
-                    //Handle generic arguments, maybe something like.... topEntity.AbbreviatedType.GenericArguments.Count 
-
-                    //Handle functions
-
-                    if topEntity.GenericParameters.Count > 0 then
-                        () //I think generic parameters can be ignored
-
-                    yield! topEntity.NestedEntities |> Seq.map (allEntities 0) |> Seq.concat
         }
 
 
@@ -259,26 +323,56 @@ let main argv =
     let allOfThem =
         jsAPI
         |> (allEntities 0)
+        |> Seq.distinct
+        |> Seq.sortBy(fun element -> element.DisplayName)
         |> Array.ofSeq
 
-    let lessOfThem =
+    let fewerOfThem =
         jsAPI
         |> (allEntities 0)
-        |> Seq.filter(fun entity -> not entity.IsFSharpModule && not (isHiddenFunction entity)) 
-        |> Seq.map unabbreviate
-        |> Seq.filter(fun entity -> entity.IsFSharpRecord || entity.IsFSharpUnion)
         |> Seq.distinct
+        |> Seq.filter(fun entity -> not entity.IsFSharpModule && not (isHiddenFunction entity)) 
+        |> Seq.filter(fun entity -> not (entity.AccessPath.Contains "System.Collections.Generic") && not (entity.AccessPath.Contains "Microsoft.FSharp.Collections"))
+        |> Seq.map unabbreviate
+        |> Seq.distinct
+        |> Seq.sortBy(fun element -> element.DisplayName) //Debugging
+        //|> Seq.filter(fun entity -> entity.IsFSharpRecord || entity.IsFSharpUnion)
         |> Array.ofSeq //While developing convenient to have as an array
-        |> Array.groupBy(fun entity -> entity.AccessPath)
+        
 
-    let namespacesAsStrings = lessOfThem |> Array.map entityToString |> String.concat "\n"
+    
+
+    let groupedByNamespace = fewerOfThem |> Array.groupBy(fun entity -> entity.AccessPath)
+
+    //Debugging
+
+    (*let debugEntities =
+        allOfThem
+        |> Array.filter (fun element -> element.TryFullName.IsSome && element.TryFullName.Value.Contains  "bob" )
+       
+    let debugEntity = debugEntities |> Array.exactlyOne
+
+    let trial =
+        allEntities 5 debugEntity
+        |> Array.ofSeq*)
+
+    let namespacesAsStrings = groupedByNamespace |> Array.map entityToString |> String.concat "\n\n"
+
+
+    //let wasFSharpMapUsed = allOfThem |> Seq.choose (fun element -> element.TryFullName) |> Seq.exists (fun fullName -> fullName.Contains "Microsoft.FSharp.Collections.FSharpMap")
+
+    let opaqueNamespaces =
+        "namespace Opaque {
+    export interface FSharpMap<K,V> {}
+    export interface Dictionary<K,V> {}
+}"
 
     let functionAsStrings =
         jsAPI.MembersFunctionsAndValues
         |> Seq.map(fun value -> sprintf "interface %s {\n\t(%s):boolean\n}\n" value.CompiledName (argumentsToString value.CurriedParameterGroups))
         |> String.concat "\n"
 
-    let all = namespacesAsStrings + "\n\n" + functionAsStrings
+    let all = namespacesAsStrings + "\n\n" + opaqueNamespaces + "\n\n" + functionAsStrings
 
     System.IO.File.WriteAllText("output.ts",all)
 

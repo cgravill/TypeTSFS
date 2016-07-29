@@ -5,11 +5,6 @@ open WebSharper
 [<JavaScript>]
 module JSAPI =
 
-
-    //let listy : List<int> = List.empty()
-
-    //let listy2 = List.empty<Shapes.Square>()
-
     type CustomGeneric<'t>() =
         let getone = 1
 
@@ -28,3 +23,12 @@ module JSAPI =
 
     let makeRectangleShape() =
         Json.Serialize (Shapes.ShapeWith.Rectangle{Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3})
+
+    let makeLookUp() =
+        Map.empty |> Map.add 0 {Shapes.Rectangle.Width = 4; Shapes.Rectangle.Height = 10}
+
+    let shapeLookUp(look:Map<int,Shapes.Rectangle>) =
+        look.[0]
+
+    let shapeLookUpDict(look:System.Collections.Generic.Dictionary<int,Shapes.Rectangle>) =
+        look.[0]
