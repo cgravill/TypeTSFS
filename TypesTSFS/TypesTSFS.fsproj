@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <None Include="paket.references" />
+    <Compile Include="Explore.fs" />
+    <Compile Include="EmitTS.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
   </ItemGroup>
