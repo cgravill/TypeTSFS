@@ -98,16 +98,17 @@ let main argv =
     //let wasFSharpMapUsed = allOfThem |> Seq.choose (fun element -> element.TryFullName) |> Seq.exists (fun fullName -> fullName.Contains "Microsoft.FSharp.Collections.FSharpMap")
 
     let opaqueNamespaces =
-        "namespace Opaque {
-    export interface FSharpMap<K,V> {}
-    export interface Dictionary<K,V> {}
+        "\texport namespace Opaque {
+\t\texport interface FSharpMap<K,V> {}
+\t\texport interface Dictionary<K,V> {}
 }"
 
     let functionAsStrings = EmitTS.functionAsStrings jsAPI.MembersFunctionsAndValues
 
     let warning = "//These interfaces are code generated from F#, any changes to this file will be lost."
+    let topNamespace = "export namespace ExperimentalGeneratedInterfaces {"
 
-    let all = warning + "\n\n" + namespacesAsStrings + "\n\n" + opaqueNamespaces + "\n\n" + functionAsStrings
+    let all = warning + "\n" + topNamespace + "\n\n" + namespacesAsStrings + "\n\n" + opaqueNamespaces + "\n\n" + functionAsStrings + "\n}"
 
     System.IO.File.WriteAllText("output.ts",all)
 

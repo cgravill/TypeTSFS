@@ -56,7 +56,7 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
        
     let records = nested |> Seq.filter (fun entity -> entity.IsFSharpRecord)
 
-    let recordFieldsToString record = String.concat "\n" (record |> Seq.map (fun (recordField:FSharpField) -> sprintf "\t\t%s: %s;" recordField.DisplayName (typeToTS recordField.FieldType)))
+    let recordFieldsToString record = String.concat "\n" (record |> Seq.map (fun (recordField:FSharpField) -> sprintf "\t\t\t%s: %s;" recordField.DisplayName (typeToTS recordField.FieldType)))
     let recordTypeGenericParameters (entity:FSharpEntity) =
             
         if entity.GenericParameters.Count = 0 then
@@ -66,7 +66,7 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
                 
     let recordsAsStrings =
         records
-        |> Seq.map (fun record -> sprintf "\texport interface %s%s {\n%s\n\t}" record.DisplayName (recordTypeGenericParameters record) (recordFieldsToString record.FSharpFields))
+        |> Seq.map (fun record -> sprintf "\t\texport interface %s%s {\n%s\n\t\t}" record.DisplayName (recordTypeGenericParameters record) (recordFieldsToString record.FSharpFields))
 
     let unions = nested |> Seq.filter (fun entity -> entity.IsFSharpUnion)
 
@@ -84,8 +84,8 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
 
     let caseAsString (case:FSharpUnionCase) =
         match case with
-        | JustName name -> sprintf "\t\t%s?: string;" name
-        | Types firstType -> sprintf "\t\t%s?: %s;" case.DisplayName (typeToTS firstType)
+        | JustName name -> sprintf "\t\t\t%s?: string;" name
+        | Types firstType -> sprintf "\t\t\t%s?: %s;" case.DisplayName (typeToTS firstType)
         
     let genericParamtersToDisplay (genericParameters:System.Collections.Generic.IList<FSharpGenericParameter>) =
         genericParameters
@@ -100,19 +100,19 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
             entity.DisplayName + "<" + (String.concat "," (genericParamtersToDisplay entity.GenericParameters)) + ">"
 
     let unionsAsString = unions |> Seq.map (fun union -> match union.UnionCases with
-                                                            | Mixture cases -> sprintf "\texport interface %s {\n%s\n\t}" (entityNameToString union) (casesAsString cases)
-                                                            | AllJustNames cases -> sprintf "\texport type %s = %s" union.DisplayName (simpleCasesAsString cases))
+                                                            | Mixture cases -> sprintf "\t\texport interface %s {\n%s\n\t\t}" (entityNameToString union) (casesAsString cases)
+                                                            | AllJustNames cases -> sprintf "\t\texport type %s = %s" union.DisplayName (simpleCasesAsString cases))
 
         
     let classes = nested |> Seq.filter (fun entity -> entity.IsFSharp && (entity.IsClass || entity.IsInterface))
 
-    let classesAsString = classes |> Seq.map (fun class_ -> sprintf "\texport interface %s {}" (entityNameToString class_))
+    let classesAsString = classes |> Seq.map (fun class_ -> sprintf "\t\texport interface %s {}" (entityNameToString class_))
 
     let allAsStrings = [classesAsString; recordsAsStrings; unionsAsString] |> Seq.concat
 
     let contents = String.concat "\n" allAsStrings
 
-    let withModuleWrapping = sprintf "namespace %s {\n%s\n}" namespacename contents
+    let withModuleWrapping = sprintf "\texport namespace %s {\n%s\n\t}" namespacename contents
     withModuleWrapping
 
 let argumentsToString (arguments:IList<IList<FSharpParameter>>) =
@@ -122,5 +122,5 @@ let argumentsToString (arguments:IList<IList<FSharpParameter>>) =
 
 let functionAsStrings (functions:seq<FSharpMemberOrFunctionOrValue>) =
     functions
-    |> Seq.map(fun value -> sprintf "interface %s {\n\t(%s):%s\n}\n" value.CompiledName (argumentsToString value.CurriedParameterGroups) (typeToTS value.ReturnParameter.Type))
+    |> Seq.map(fun value -> sprintf "export interface %s {\n\t(%s):%s\n}\n" value.CompiledName (argumentsToString value.CurriedParameterGroups) (typeToTS value.ReturnParameter.Type))
     |> String.concat "\n"
