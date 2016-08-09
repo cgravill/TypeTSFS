@@ -131,6 +131,7 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                                                             |> Seq.concat
                                                             |> Seq.map (fun parameter -> parameter.Type)
                                                             |> Seq.collect (fun type2 -> type2.GenericArguments)
+                                                            |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
                                                             |> Seq.map (fun type2 -> type2.GenericArguments
                                                                                         |> Seq.filter (fun argument -> argument.HasTypeDefinition)
                                                                                         |> Seq.map (fun argument -> argument.TypeDefinition)))

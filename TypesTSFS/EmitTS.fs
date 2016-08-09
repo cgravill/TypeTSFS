@@ -52,11 +52,26 @@ let rec typeToTS (fsharpType:FSharpType) =
             else
                 stem
 
+let parameterAndTypeToTS parameterName (fsharpType:FSharpType) =
+
+    //We have to check it's not some of these or will throw on accessing TypeDefinition
+    let isOption =
+        fsharpType.IsAbbreviation &&
+        not fsharpType.IsGenericParameter &&
+        not fsharpType.IsFunctionType &&
+        not fsharpType.IsTupleType &&
+        fsharpType.TypeDefinition.DisplayName = "option" //Bit much to assume this is the right option
+
+    if isOption then
+        sprintf "%s? : %s" parameterName (typeToTS fsharpType.GenericArguments.[0])
+    else
+        sprintf "%s : %s" parameterName (typeToTS fsharpType)
+
 let entityToString (namespacename:string, nested:FSharpEntity[]) =
        
     let records = nested |> Seq.filter (fun entity -> entity.IsFSharpRecord)
 
-    let recordFieldsToString record = String.concat "\n" (record |> Seq.map (fun (recordField:FSharpField) -> sprintf "\t\t\t%s: %s;" recordField.DisplayName (typeToTS recordField.FieldType)))
+    let recordFieldsToString record = String.concat "\n" (record |> Seq.map (fun (recordField:FSharpField) -> sprintf "\t\t\t%s;" (parameterAndTypeToTS recordField.DisplayName recordField.FieldType)))
     let recordTypeGenericParameters (entity:FSharpEntity) =
             
         if entity.GenericParameters.Count = 0 then
