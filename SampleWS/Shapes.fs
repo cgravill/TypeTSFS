@@ -24,6 +24,9 @@ module Shapes =
         | [<Constant "Square">] Square
         | [<Constant "Circle">] Circle
 
+    [<NamedUnionCases>]
+    type SingleDU = Single of Single:int
+
     [<NamedUnionCases "">]
     type ShapeWith = 
         | [<Name "Rectangle">] Rectangle of Rectangle

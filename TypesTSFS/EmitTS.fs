@@ -22,7 +22,6 @@ let rec typeToTS (fsharpType:FSharpType) =
 
             let argumentsAsString = inputs |> Seq.mapi (fun i argument -> (namedOrNumber "" i) + ":" + typeToTS argument) |> String.concat ", "
             let stringed = sprintf "(%s) => %s" argumentsAsString (typeToTS output)
-            //"(p0:SOMETHING) => SOMETHING"
             stringed
         elif fsharpType.IsTupleType then
             "(SOMETHING,SOMETHING)"
@@ -115,12 +114,13 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
         else
             AllJustNames cases
 
-    let caseAsString (case:FSharpUnionCase) =
+    let caseAsString (all_cases) (case:FSharpUnionCase) =
+        let optional = if (Seq.length all_cases) = 1 then "" else "?" 
         match case with
-        | JustName name -> sprintf "\t\t\t%s?: string;" name
-        | Types firstType -> sprintf "\t\t\t%s?: %s;" case.DisplayName (typeToTS firstType)
+        | JustName name -> sprintf "\t\t\t%s%s: string;" name optional
+        | Types firstType -> sprintf "\t\t\t%s%s: %s;" case.DisplayName optional (typeToTS firstType)
 
-    let casesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map caseAsString |> String.concat "\n"
+    let casesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (cases |> caseAsString) |> String.concat "\n"
     let simpleCasesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (fun case -> "\"" + case.DisplayName + "\"") |> String.concat " | "
 
 

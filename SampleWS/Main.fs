@@ -44,7 +44,8 @@ module JSAPI =
     let makeRectangleSerialize() =
         Json.Serialize {Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}
 
-
+    let getSingleDU() =
+        Json.Encode (Shapes.SingleDU.Single 6)
 
     let makeLookUp() =
         Map.empty |> Map.add 0 {Shapes.Rectangle.Width = 4; Shapes.Rectangle.Height = 10}
