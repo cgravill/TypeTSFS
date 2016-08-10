@@ -19,10 +19,32 @@ module JSAPI =
 
 
     let makeRectangle() =
-        Json.Serialize {Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}
+        {Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}
+
+    let makeRectangleEncode() =
+        Json.Encode {Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}
 
     let makeRectangleShape() =
         Json.Serialize (Shapes.ShapeWith.Rectangle{Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3})
+
+
+    let makeRectangles() = 
+        [{Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}; {Shapes.Rectangle.Width = 4; Shapes.Rectangle.Height = 1}]
+
+    let makeRectanglesEncode() =
+        Json.Encode [{Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}; {Shapes.Rectangle.Width = 4; Shapes.Rectangle.Height = 1}]
+
+    let makeRectanglesJSON() =
+        Json.Serialize [{Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}; {Shapes.Rectangle.Width = 4; Shapes.Rectangle.Height = 1}]
+
+
+    let makePossibleRectangles() =
+        [Some{Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}; None]
+
+    let makeRectangleSerialize() =
+        Json.Serialize {Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}
+
+
 
     let makeLookUp() =
         Map.empty |> Map.add 0 {Shapes.Rectangle.Width = 4; Shapes.Rectangle.Height = 10}
