@@ -60,12 +60,30 @@ let parameterAndTypeToTS parameterName (fsharpType:FSharpType) =
         not fsharpType.IsGenericParameter &&
         not fsharpType.IsFunctionType &&
         not fsharpType.IsTupleType &&
-        fsharpType.TypeDefinition.DisplayName = "option" //Bit much to assume this is the right option
+        fsharpType.TypeDefinition.DisplayName = "option" //Bit much to assume this is the right "option"
 
     if isOption then
         sprintf "%s? : %s" parameterName (typeToTS fsharpType.GenericArguments.[0])
     else
         sprintf "%s : %s" parameterName (typeToTS fsharpType)
+
+let genericParamtersToDisplay (genericParameters:System.Collections.Generic.IList<FSharpGenericParameter>) =
+    genericParameters
+    |> Seq.map(fun genericParameter -> genericParameter.DisplayName)
+
+
+let inline displayName (x:^t) =
+    (^t: (static member DisplayName: ^t -> string) (x))
+
+
+let nameAndParametersToString name parameters =
+    if Seq.isEmpty parameters then
+        name
+    else
+        name + "<" + (String.concat "," (genericParamtersToDisplay parameters)) + ">"
+
+let entityNameToString (entity:FSharpEntity) = nameAndParametersToString entity.DisplayName entity.GenericParameters
+let memberNameToString (entity:FSharpMemberOrFunctionOrValue) = nameAndParametersToString entity.DisplayName entity.GenericParameters
 
 let entityToString (namespacename:string, nested:FSharpEntity[]) =
        
@@ -101,18 +119,10 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
         match case with
         | JustName name -> sprintf "\t\t\t%s?: string;" name
         | Types firstType -> sprintf "\t\t\t%s?: %s;" case.DisplayName (typeToTS firstType)
-        
-    let genericParamtersToDisplay (genericParameters:System.Collections.Generic.IList<FSharpGenericParameter>) =
-        genericParameters
-        |> Seq.map(fun genericParameter -> genericParameter.DisplayName)
 
     let casesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map caseAsString |> String.concat "\n"
     let simpleCasesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (fun case -> "\"" + case.DisplayName + "\"") |> String.concat " | "
-    let entityNameToString (entity:FSharpEntity) =
-        if entity.GenericParameters.Count = 0 then
-            entity.DisplayName
-        else
-            entity.DisplayName + "<" + (String.concat "," (genericParamtersToDisplay entity.GenericParameters)) + ">"
+
 
     let unionsAsString = unions |> Seq.map (fun union -> match union.UnionCases with
                                                             | Mixture cases -> sprintf "\t\texport interface %s {\n%s\n\t\t}" (entityNameToString union) (casesAsString cases)
@@ -137,5 +147,5 @@ let argumentsToString (arguments:IList<IList<FSharpParameter>>) =
 
 let functionAsStrings (functions:seq<FSharpMemberOrFunctionOrValue>) =
     functions
-    |> Seq.map(fun value -> sprintf "export interface %s {\n\t(%s):%s\n}\n" value.CompiledName (argumentsToString value.CurriedParameterGroups) (typeToTS value.ReturnParameter.Type))
+    |> Seq.map(fun value -> sprintf "export interface %s {\n\t(%s):%s\n}\n" (memberNameToString value) (argumentsToString value.CurriedParameterGroups) (typeToTS value.ReturnParameter.Type))
     |> String.concat "\n"
