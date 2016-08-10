@@ -48,7 +48,7 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                                                 |> Seq.cache //Debug
 
 
-
+                        //1st generic
                         yield! topEntity.FSharpFields
                                                 |> Seq.filter (fun field -> not field.FieldType.IsFunctionType)
                                                 |> Seq.map (fun field -> field.FieldType)
@@ -61,6 +61,7 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                                                 |> Seq.concat
                                                 |> Seq.cache //Debug
 
+                        //2nd generic
                         yield! topEntity.FSharpFields
                                                 |> Seq.filter (fun field -> not field.FieldType.IsFunctionType)
                                                 |> Seq.map (fun field -> field.FieldType)

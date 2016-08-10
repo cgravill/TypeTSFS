@@ -85,7 +85,9 @@ let entityNameToString (entity:FSharpEntity) = nameAndParametersToString entity.
 let memberNameToString (entity:FSharpMemberOrFunctionOrValue) = nameAndParametersToString entity.DisplayName entity.GenericParameters
 
 let entityToString (namespacename:string, nested:FSharpEntity[]) =
-       
+      
+    //Records
+
     let records = nested |> Seq.filter (fun entity -> entity.IsFSharpRecord)
 
     let recordFieldsToString record = String.concat "\n" (record |> Seq.map (fun (recordField:FSharpField) -> sprintf "\t\t\t%s;" (parameterAndTypeToTS recordField.DisplayName recordField.FieldType)))
@@ -100,13 +102,17 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
         records
         |> Seq.map (fun record -> sprintf "\t\texport interface %s%s {\n%s\n\t\t}" record.DisplayName (recordTypeGenericParameters record) (recordFieldsToString record.FSharpFields))
 
+
+    //Unions
+
     let unions = nested |> Seq.filter (fun entity -> entity.IsFSharpUnion)
 
-    let (|JustName|Types|) (case:FSharpUnionCase) =
-        if (case.UnionCaseFields.Count > 0) then
-            Types case.UnionCaseFields.[0].FieldType
-        else
-            JustName case.DisplayName
+    let (|JustName|Type|Types|) (case:FSharpUnionCase) =
+
+        match case.UnionCaseFields.Count with
+        | 0 -> JustName case.DisplayName
+        | 1 -> Type case.UnionCaseFields.[0].FieldType
+        | _ -> Types case.UnionCaseFields.[0]
 
     let (|AllJustNames|Mixture|) (cases:IList<FSharpUnionCase>) =
         if cases |> Seq.exists (fun case -> case.UnionCaseFields.Count > 0) then
@@ -118,7 +124,8 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
         let optional = if (Seq.length all_cases) = 1 then "" else "?" 
         match case with
         | JustName name -> sprintf "\t\t\t%s%s: string;" name optional
-        | Types firstType -> sprintf "\t\t\t%s%s: %s;" case.DisplayName optional (typeToTS firstType)
+        | Type singleType -> sprintf "\t\t\t%s%s: %s;" case.DisplayName optional (typeToTS singleType)
+        | Types types -> sprintf "\t\t\t%s%s: %s;" case.DisplayName optional "OnlySupportSingleTypeCases"
 
     let casesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (cases |> caseAsString) |> String.concat "\n"
     let simpleCasesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (fun case -> "\"" + case.DisplayName + "\"") |> String.concat " | "
@@ -128,10 +135,14 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
                                                             | Mixture cases -> sprintf "\t\texport interface %s {\n%s\n\t\t}" (entityNameToString union) (casesAsString cases)
                                                             | AllJustNames cases -> sprintf "\t\texport type %s = %s" union.DisplayName (simpleCasesAsString cases))
 
-        
+    //Classes
+
     let classes = nested |> Seq.filter (fun entity -> entity.IsFSharp && (entity.IsClass || entity.IsInterface))
 
     let classesAsString = classes |> Seq.map (fun class_ -> sprintf "\t\texport interface %s {}" (entityNameToString class_))
+
+
+    //Concat them
 
     let allAsStrings = [classesAsString; recordsAsStrings; unionsAsString] |> Seq.concat
 
