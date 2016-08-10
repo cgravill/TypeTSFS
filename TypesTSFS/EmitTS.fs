@@ -54,6 +54,7 @@ let rec typeToTS (fsharpType:FSharpType) =
 let parameterAndTypeToTS parameterName (fsharpType:FSharpType) =
 
     //We have to check it's not some of these or will throw on accessing TypeDefinition
+    //TODO: handle abbreviations
     let isOption =
         fsharpType.IsAbbreviation &&
         not fsharpType.IsGenericParameter &&
@@ -107,6 +108,18 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
 
     let unions = nested |> Seq.filter (fun entity -> entity.IsFSharpUnion)
 
+    let isNumber (type_:FSharpType) =
+
+        let reallyType = if type_.IsAbbreviation then type_.AbbreviatedType else type_
+
+        reallyType.HasTypeDefinition &&
+        not reallyType.IsAbbreviation &&
+        not reallyType.IsGenericParameter &&
+        not reallyType.IsFunctionType &&
+        not reallyType.IsTupleType &&
+        (reallyType.TypeDefinition.DisplayName = "Double" || //Bit much to assume this is the right "option"
+         reallyType.TypeDefinition.DisplayName = "int32")
+
     let (|JustName|Type|Types|) (case:FSharpUnionCase) =
 
         match case.UnionCaseFields.Count with
@@ -114,9 +127,12 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
         | 1 -> Type case.UnionCaseFields.[0].FieldType
         | _ -> Types case.UnionCaseFields.[0]
 
-    let (|AllJustNames|Mixture|) (cases:IList<FSharpUnionCase>) =
+    let (|AllJustNames|NamesAndNumbers|ComplexTypes|) (cases:IList<FSharpUnionCase>) =
         if cases |> Seq.exists (fun case -> case.UnionCaseFields.Count > 0) then
-            Mixture cases
+            if cases |> Seq.collect (fun case -> case.UnionCaseFields) |> Seq.exists (fun field -> not (isNumber field.FieldType)) then
+                ComplexTypes cases
+            else
+                NamesAndNumbers cases
         else
             AllJustNames cases
 
@@ -127,12 +143,22 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
         | Type singleType -> sprintf "\t\t\t%s%s: %s;" case.DisplayName optional (typeToTS singleType)
         | Types types -> sprintf "\t\t\t%s%s: %s;" case.DisplayName optional "OnlySupportSingleTypeCases"
 
+    let nameOrNumberToString (case:FSharpUnionCase) =
+        if case.UnionCaseFields.Count = 1 && isNumber case.UnionCaseFields.[0].FieldType then
+            sprintf "{ %s: number }" case.DisplayName
+        else
+            "\"" + case.DisplayName + "\""
+
     let casesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (cases |> caseAsString) |> String.concat "\n"
-    let simpleCasesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (fun case -> "\"" + case.DisplayName + "\"") |> String.concat " | "
+    
+    let namesAndNumbersCasesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (fun case -> nameOrNumberToString case) |> String.concat " | "
+
+    let simpleCasesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (fun case -> nameOrNumberToString case) |> String.concat " | "
 
 
     let unionsAsString = unions |> Seq.map (fun union -> match union.UnionCases with
-                                                            | Mixture cases -> sprintf "\t\texport interface %s {\n%s\n\t\t}" (entityNameToString union) (casesAsString cases)
+                                                            | ComplexTypes cases -> sprintf "\t\texport interface %s {\n%s\n\t\t}" (entityNameToString union) (casesAsString cases)
+                                                            | NamesAndNumbers cases -> sprintf "\t\texport type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases)
                                                             | AllJustNames cases -> sprintf "\t\texport type %s = %s" union.DisplayName (simpleCasesAsString cases))
 
     //Classes
