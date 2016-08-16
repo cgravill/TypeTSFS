@@ -194,5 +194,5 @@ let argumentsToString (arguments:IList<IList<FSharpParameter>>) =
 
 let functionAsStrings (functions:seq<FSharpMemberOrFunctionOrValue>) =
     functions
-    |> Seq.map(fun value -> sprintf "export interface %s {\n\t(%s):%s\n}\n" (memberNameToString value) (argumentsToString value.CurriedParameterGroups) (typeToTS value.ReturnParameter.Type))
+    |> Seq.map(fun value -> sprintf "\texport interface %s {\n\t\t(%s):%s\n\t}\n" (memberNameToString value) (argumentsToString value.CurriedParameterGroups) (typeToTS value.ReturnParameter.Type))
     |> String.concat "\n"
