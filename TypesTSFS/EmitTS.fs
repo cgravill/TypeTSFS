@@ -30,6 +30,7 @@ let rec typeToTS (fsharpType:FSharpType) =
             if
                 (fsharpType.TypeDefinition.DisplayName = "Dictionary" ||
                  fsharpType.TypeDefinition.DisplayName = "Map") &&
+                fsharpType.GenericArguments.[0].HasTypeDefinition &&
                 fsharpType.GenericArguments.[0].TypeDefinition.DisplayName = "string" then
                 
                 sprintf "{ [key: string]: %s }" (typeToTS fsharpType.GenericArguments.[1])
