@@ -26,30 +26,39 @@ let rec typeToTS (fsharpType:FSharpType) =
         elif fsharpType.IsTupleType then
             "(SOMETHING,SOMETHING)"
         else
-            let stem =
-                match fsharpType.TypeDefinition.DisplayName with
-                | "int" //caution with ints and JavaScript number
-                | "Int32"  
-                | "uint32"
-                | "UInt32"
-                | "float"
-                | "Double" -> "number"
-                | "bool"
-                | "Boolean" -> "boolean"
-                | "list" 
-                | "List" 
-                | "[]" -> "Array"
-                | "string"
-                | "String" -> "string"
-                | "Unit" -> "void"
-                | "Dictionary" -> "Opaque.Dictionary"
-                | "Map" -> "Opaque.FSharpMap"
-                | x -> fsharpType.TypeDefinition.AccessPath + "." + x
 
-            if fsharpType.GenericArguments.Count > 0 then
-                stem + "<" + (fsharpType.GenericArguments |> Seq.map typeToTS |> String.concat ",") + ">"
+            if
+                (fsharpType.TypeDefinition.DisplayName = "Dictionary" ||
+                 fsharpType.TypeDefinition.DisplayName = "Map") &&
+                fsharpType.GenericArguments.[0].TypeDefinition.DisplayName = "string" then
+                
+                sprintf "{ [key: string]: %s }" (typeToTS fsharpType.GenericArguments.[1])
             else
-                stem
+
+                let stem =
+                    match fsharpType.TypeDefinition.DisplayName with
+                    | "int" //caution with ints and JavaScript number
+                    | "Int32"  
+                    | "uint32"
+                    | "UInt32"
+                    | "float"
+                    | "Double" -> "number"
+                    | "bool"
+                    | "Boolean" -> "boolean"
+                    | "list" 
+                    | "List" 
+                    | "[]" -> "Array"
+                    | "string"
+                    | "String" -> "string"
+                    | "Unit" -> "void"
+                    | "Dictionary" -> "Opaque.Dictionary"
+                    | "Map" -> "Opaque.FSharpMap"
+                    | x -> fsharpType.TypeDefinition.AccessPath + "." + x
+
+                if fsharpType.GenericArguments.Count > 0 then
+                    stem + "<" + (fsharpType.GenericArguments |> Seq.map typeToTS |> String.concat ",") + ">"
+                else
+                    stem
 
 let parameterAndTypeToTS parameterName (fsharpType:FSharpType) =
 
