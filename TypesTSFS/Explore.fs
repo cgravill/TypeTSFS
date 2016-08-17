@@ -27,11 +27,13 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                         ()
                     
                     else
+                        let unabbreivated = topEntity.AbbreviatedType
 
-                        yield! topEntity.AbbreviatedType.TypeDefinition |> innerFind
+                        if unabbreivated.HasTypeDefinition then
+                            yield! unabbreivated.TypeDefinition |> innerFind
 
                         yield!
-                            topEntity.AbbreviatedType.GenericArguments
+                            unabbreivated.GenericArguments
                             |> Seq.filter (fun argument -> argument.HasTypeDefinition)
                             |> Seq.map (fun argument -> argument.TypeDefinition |> innerFind)
                             |> Seq.concat
