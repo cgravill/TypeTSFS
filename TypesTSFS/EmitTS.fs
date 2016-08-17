@@ -3,9 +3,9 @@
 open Microsoft.FSharp.Compiler.SourceCodeServices
 type IList<'a> = System.Collections.Generic.IList<'a>
 
-let namedOrNumber name (i:int) =
+let namedOrNumber name i =
     match name with
-    | "" -> ("p" + i.ToString())
+    | "" -> ("p" + string i)
     | _ -> name
 
 let rec typeToTS (fsharpType:FSharpType) =
@@ -164,9 +164,9 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
 
     let casesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (cases |> caseAsString) |> String.concat "\n"
     
-    let namesAndNumbersCasesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (fun case -> nameOrNumberToString case) |> String.concat " | "
+    let namesAndNumbersCasesAsString = Seq.map nameOrNumberToString >> String.concat " | "
 
-    let simpleCasesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (fun case -> nameOrNumberToString case) |> String.concat " | "
+    let simpleCasesAsString = Seq.map nameOrNumberToString >> String.concat " | "
 
 
     let unionsAsString = unions |> Seq.map (fun union -> match union.UnionCases with
