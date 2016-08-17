@@ -24,7 +24,7 @@ let rec typeToTS (fsharpType:FSharpType) =
             let stringed = sprintf "(%s) => %s" argumentsAsString (typeToTS output)
             stringed
         elif fsharpType.IsTupleType then
-            "(SOMETHING,SOMETHING)"
+            "Opaque.FSharpTuple" //Not currently supported
         else
 
             if
@@ -48,6 +48,9 @@ let rec typeToTS (fsharpType:FSharpType) =
                     | "Boolean" -> "boolean"
                     | "list" 
                     | "List" 
+                    | "set"
+                    | "Set"
+                    | "IEnumerable" //TODO: check this really goes to array
                     | "[]" -> "Array"
                     | "string"
                     | "String" -> "string"
