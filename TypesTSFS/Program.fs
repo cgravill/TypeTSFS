@@ -43,7 +43,10 @@ let main argv =
 
     let unabbreviate (possiblyAbbreviated:FSharpEntity) =
         if possiblyAbbreviated.IsFSharpAbbreviation then
-            possiblyAbbreviated.AbbreviatedType.TypeDefinition
+            if possiblyAbbreviated.AbbreviatedType.HasTypeDefinition then
+                possiblyAbbreviated.AbbreviatedType.TypeDefinition
+            else
+                possiblyAbbreviated //e.g. Tuple abbreviated...
         else
             possiblyAbbreviated
 
@@ -76,10 +79,6 @@ let main argv =
         |> Array.ofSeq //While developing convenient to have as an array
         
 
-    
-
-    let groupedByNamespace = fewerOfThem |> Array.groupBy(fun entity -> entity.AccessPath)
-
     //Debugging
 
     (*let debugEntities =
@@ -88,9 +87,14 @@ let main argv =
        
     let debugEntity = debugEntities |> Array.exactlyOne
 
-    let trial =
-        allEntities 5 debugEntity
+    let fewerOfThem =
+        Explore.findEntities debugEntity
         |> Array.ofSeq*)
+        
+    //Debugging
+    
+
+    let groupedByNamespace = fewerOfThem |> Array.groupBy(fun entity -> entity.AccessPath)
 
     let namespacesAsStrings = groupedByNamespace |> Array.map EmitTS.entityToString |> String.concat "\n\n"
 
@@ -101,7 +105,8 @@ let main argv =
         "\texport namespace Opaque {
 \t\texport interface FSharpMap<K,V> {}
 \t\texport interface Dictionary<K,V> {}
-}"
+\t\texport interface FSharpTuple {} 
+\t}"
 
     let functionAsStrings = EmitTS.functionAsStrings jsAPI.MembersFunctionsAndValues
 
