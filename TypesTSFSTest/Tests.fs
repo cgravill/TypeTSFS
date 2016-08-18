@@ -4,7 +4,7 @@ open Xunit
 open Swensen.Unquote
 
 [<Fact>]
-let ``Empty test``() =
+let ``Trace some entities``() =
 
     let sampleText = """
 module M

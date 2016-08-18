@@ -19,25 +19,19 @@ let parseAndTypeCheckSingleFile (file, input) =
     | FSharpCheckFileAnswer.Succeeded(res) -> parseFileResults, res
     | res -> failwithf "Parsing did not finish... (%A)" res
 
-let file = "/home/user/Test.fsx"
-
 
 [<EntryPoint>]
 let main argv =
 
     let projectFile = @"../../../SampleWS/SampleWS.fsproj"
 
-    let x = ProjectCracker.GetProjectOptionsFromProjectFile(projectFile)
+    let projectOptions = ProjectCracker.GetProjectOptionsFromProjectFile(projectFile)
 
-    let y = checker.ParseAndCheckProject x |> Async.RunSynchronously
+    let checkResults = checker.ParseAndCheckProject projectOptions |> Async.RunSynchronously
 
-    let entities = y.AssemblySignature.Entities
-
+    let entities = checkResults.AssemblySignature.Entities
 
     let jsAPI = entities |> Seq.filter (fun entity -> entity.CompiledName = "JSAPI") |> Seq.exactlyOne
-
-
-
 
     let namespaceContents = System.Collections.Generic.Dictionary<string, System.Text.StringBuilder>()
 
@@ -50,10 +44,6 @@ let main argv =
         else
             possiblyAbbreviated
 
-    
-
-
-    
     let isHiddenFunction (possiblyAbbreviated:FSharpEntity) =
         if possiblyAbbreviated.IsFSharpAbbreviation then
             possiblyAbbreviated.AbbreviatedType.IsFunctionType
