@@ -76,9 +76,9 @@ let parameterAndTypeToTS parameterName (fsharpType:FSharpType) =
         fsharpType.TypeDefinition.DisplayName = "option" //Bit much to assume this is the right "option"
 
     if isOption then
-        sprintf "%s? : %s" parameterName (typeToTS fsharpType.GenericArguments.[0])
+        sprintf "%s?: %s" parameterName (typeToTS fsharpType.GenericArguments.[0])
     else
-        sprintf "%s : %s" parameterName (typeToTS fsharpType)
+        sprintf "%s: %s" parameterName (typeToTS fsharpType)
 
 let genericParamtersToDisplay (genericParameters:System.Collections.Generic.IList<FSharpGenericParameter>) =
     genericParameters

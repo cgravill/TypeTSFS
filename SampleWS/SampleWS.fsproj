@@ -54,10 +54,12 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\WebSharper.3.6.14.237\build\WebSharper.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\WebSharper.3.6.14.237\build\WebSharper.targets'))" />
   </Target>
+  <Import Project="..\.paket\paket.targets" />
   <ItemGroup>
     <Compile Include="Shapes.fs" />
-    <Compile Include="Main.fs" />
-    <Content Include="packages.config" />
+    <Compile Include="JSAPI.fs" />
+    <Compile Include="JSONAPI.fs" />
+    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -67,46 +69,62 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-    <Reference Include="WebSharper.Collections">
-      <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.Collections.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebSharper.Control">
-      <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.Control.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebSharper.Core">
-      <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebSharper.Core.JavaScript">
-      <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.Core.JavaScript.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebSharper.InterfaceGenerator">
-      <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.InterfaceGenerator.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebSharper.JavaScript">
-      <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.JavaScript.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebSharper.JQuery">
-      <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.JQuery.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebSharper.Main">
-      <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.Main.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebSharper.Sitelets">
-      <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.Sitelets.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebSharper.Web">
-      <HintPath>..\packages\WebSharper.3.6.14.237\lib\net40\WebSharper.Web.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
-  <Import Project="..\.paket\paket.targets" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3')">
+      <ItemGroup>
+        <Reference Include="WebSharper.Collections">
+          <HintPath>..\packages\WebSharper\lib\net40\WebSharper.Collections.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WebSharper.Control">
+          <HintPath>..\packages\WebSharper\lib\net40\WebSharper.Control.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WebSharper.Core.JavaScript">
+          <HintPath>..\packages\WebSharper\lib\net40\WebSharper.Core.JavaScript.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WebSharper.Core">
+          <HintPath>..\packages\WebSharper\lib\net40\WebSharper.Core.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WebSharper.InterfaceGenerator">
+          <HintPath>..\packages\WebSharper\lib\net40\WebSharper.InterfaceGenerator.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WebSharper.JQuery">
+          <HintPath>..\packages\WebSharper\lib\net40\WebSharper.JQuery.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WebSharper.JavaScript">
+          <HintPath>..\packages\WebSharper\lib\net40\WebSharper.JavaScript.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WebSharper.Main">
+          <HintPath>..\packages\WebSharper\lib\net40\WebSharper.Main.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WebSharper.Sitelets">
+          <HintPath>..\packages\WebSharper\lib\net40\WebSharper.Sitelets.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="WebSharper.Web">
+          <HintPath>..\packages\WebSharper\lib\net40\WebSharper.Web.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="..\packages\WebSharper\build\WebSharper.targets" Condition="Exists('..\packages\WebSharper\build\WebSharper.targets')" Label="Paket" />
 </Project>

@@ -1,34 +1,32 @@
-﻿namespace SampleWS
+﻿[<ReflectedDefinition>]
+module Shapes
 
 open WebSharper
 
-[<ReflectedDefinition>]
-module Shapes =
+type Rectangle = {
+    Width: int;
+    Height: int;
+}
 
-    type Rectangle = {
-        Width: int;
-        Height: int;
-    }
+type Square = {
+    Length: int;
+}
 
-    type Square = {
-        Length: int;
-    }
+type Circle = {
+    Radius: int;
+    Numbers: List<int>;
+}
 
-    type Circle = {
-        Radius: int;
-        Numbers: List<int>;
-    }
+type Shape = 
+    | [<Constant "Rectangle">] Rectangle
+    | [<Constant "Square">] Square
+    | [<Constant "Circle">] Circle
 
-    type Shape = 
-        | [<Constant "Rectangle">] Rectangle
-        | [<Constant "Square">] Square
-        | [<Constant "Circle">] Circle
+[<NamedUnionCases>]
+type SingleDU = Single of Single:int
 
-    [<NamedUnionCases>]
-    type SingleDU = Single of Single:int
-
-    [<NamedUnionCases "">]
-    type ShapeWith = 
-        | [<Name "Rectangle">] Rectangle of Rectangle
-        | [<Name "Square">] Square of Square
-        | [<Name "MaybeCircle">] MaybeCircle of Circle option
+[<NamedUnionCases "">]
+type ShapeWith = 
+    | [<Name "Rectangle">] Rectangle of Rectangle
+    | [<Name "Square">] Square of Square
+    | [<Name "MaybeCircle">] MaybeCircle of Circle option
