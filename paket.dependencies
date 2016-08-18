@@ -1,6 +1,10 @@
 source https://api.nuget.org/v3/index.json
 
 
-nuget FSharp.Compiler.Service >= 6
+nuget FSharp.Compiler.Service >= 6.0.2
 nuget FSharp.Compiler.Service.ProjectCracker >= 6
 nuget WebSharper
+nuget FsUnit.xUnit
+nuget xunit.runner.console >= 2.1
+//https://github.com/fsprojects/Paket/issues/516#issuecomment-124178320
+nuget xunit.runner.visualstudio >= 2.1 version_in_path: true
