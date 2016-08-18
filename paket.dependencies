@@ -8,3 +8,5 @@ nuget FsUnit.xUnit
 nuget xunit.runner.console >= 2.1
 //https://github.com/fsprojects/Paket/issues/516#issuecomment-124178320
 nuget xunit.runner.visualstudio >= 2.1 version_in_path: true
+
+nuget Unquote >= 3.1.2
