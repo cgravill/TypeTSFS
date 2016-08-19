@@ -20,7 +20,7 @@ let rec typeToTS (fsharpType:FSharpType) =
             let inputs = fsharpType.GenericArguments |> Seq.take (fsharpType.GenericArguments.Count - 1)
             let output = fsharpType.GenericArguments |> Seq.skip (fsharpType.GenericArguments.Count - 1) |> Seq.exactlyOne
 
-            let argumentsAsString = inputs |> Seq.mapi (fun i argument -> (namedOrNumber "" i) + ":" + typeToTS argument) |> String.concat ", "
+            let argumentsAsString = inputs |> Seq.mapi (fun i argument -> (namedOrNumber "" i) + ": " + typeToTS argument) |> String.concat ", "
             let stringed = sprintf "(%s) => %s" argumentsAsString (typeToTS output)
             stringed
         elif fsharpType.IsTupleType then
@@ -60,7 +60,7 @@ let rec typeToTS (fsharpType:FSharpType) =
                     | x -> fsharpType.TypeDefinition.AccessPath + "." + x
 
                 if fsharpType.GenericArguments.Count > 0 then
-                    stem + "<" + (fsharpType.GenericArguments |> Seq.map typeToTS |> String.concat ",") + ">"
+                    stem + "<" + (fsharpType.GenericArguments |> Seq.map typeToTS |> String.concat ", ") + ">"
                 else
                     stem
 
@@ -93,7 +93,7 @@ let nameAndParametersToString name parameters =
     if Seq.isEmpty parameters then
         name
     else
-        name + "<" + (String.concat "," (genericParamtersToDisplay parameters)) + ">"
+        name + "<" + (String.concat ", " (genericParamtersToDisplay parameters)) + ">"
 
 let entityNameToString (entity:FSharpEntity) = nameAndParametersToString entity.DisplayName entity.GenericParameters
 let memberNameToString (entity:FSharpMemberOrFunctionOrValue) = nameAndParametersToString entity.DisplayName entity.GenericParameters
@@ -104,17 +104,17 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
 
     let records = nested |> Seq.filter (fun entity -> entity.IsFSharpRecord)
 
-    let recordFieldsToString record = String.concat "\n" (record |> Seq.map (fun (recordField:FSharpField) -> sprintf "\t\t\t%s;" (parameterAndTypeToTS recordField.DisplayName recordField.FieldType)))
+    let recordFieldsToString record = String.concat "\r\n" (record |> Seq.map (fun (recordField:FSharpField) -> sprintf "            %s;" (parameterAndTypeToTS recordField.DisplayName recordField.FieldType)))
     let recordTypeGenericParameters (entity:FSharpEntity) =
             
         if entity.GenericParameters.Count = 0 then
             ""
         else
-            "<" + (entity.GenericParameters |> Seq.map (fun param -> param.Name) |> String.concat ",") + ">"
+            "<" + (entity.GenericParameters |> Seq.map (fun param -> param.Name) |> String.concat ", ") + ">"
                 
     let recordsAsStrings =
         records
-        |> Seq.map (fun record -> sprintf "\t\texport interface %s%s {\n%s\n\t\t}" record.DisplayName (recordTypeGenericParameters record) (recordFieldsToString record.FSharpFields))
+        |> Seq.map (fun record -> sprintf "        export interface %s%s {\r\n%s\r\n        }" record.DisplayName (recordTypeGenericParameters record) (recordFieldsToString record.FSharpFields))
 
 
     //Unions
@@ -152,9 +152,9 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
     let caseAsString (all_cases) (case:FSharpUnionCase) =
         let optional = if (Seq.length all_cases) = 1 then "" else "?" 
         match case with
-        | JustName name -> sprintf "\t\t\t%s%s: string;" name optional
-        | Type singleType -> sprintf "\t\t\t%s%s: %s;" case.DisplayName optional (typeToTS singleType)
-        | Types types -> sprintf "\t\t\t%s%s: %s;" case.DisplayName optional "OnlySupportSingleTypeCases"
+        | JustName name -> sprintf "            %s%s: string;" name optional
+        | Type singleType -> sprintf "            %s%s: %s;" case.DisplayName optional (typeToTS singleType)
+        | Types types -> sprintf "            %s%s: %s;" case.DisplayName optional "OnlySupportSingleTypeCases"
 
     let nameOrNumberToString (case:FSharpUnionCase) =
         if case.UnionCaseFields.Count = 1 && isNumber case.UnionCaseFields.[0].FieldType then
@@ -162,7 +162,7 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
         else
             "\"" + case.DisplayName + "\""
 
-    let casesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (cases |> caseAsString) |> String.concat "\n"
+    let casesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (cases |> caseAsString) |> String.concat "\r\n"
     
     let namesAndNumbersCasesAsString = Seq.map nameOrNumberToString >> String.concat " | "
 
@@ -170,32 +170,32 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
 
 
     let unionsAsString = unions |> Seq.map (fun union -> match union.UnionCases with
-                                                            | ComplexTypes cases -> sprintf "\t\texport interface %s {\n%s\n\t\t}" (entityNameToString union) (casesAsString cases)
-                                                            | NamesAndNumbers cases -> sprintf "\t\texport type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases)
-                                                            | AllJustNames cases -> sprintf "\t\texport type %s = %s" union.DisplayName (simpleCasesAsString cases))
+                                                            | ComplexTypes cases -> sprintf "        export interface %s {\r\n%s\r\n        }" (entityNameToString union) (casesAsString cases)
+                                                            | NamesAndNumbers cases -> sprintf "        export type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases)
+                                                            | AllJustNames cases -> sprintf "        export type %s = %s" union.DisplayName (simpleCasesAsString cases))
 
     //Classes
 
     let classes = nested |> Seq.filter (fun entity -> entity.IsFSharp && (entity.IsClass || entity.IsInterface))
 
-    let classesAsString = classes |> Seq.map (fun class_ -> sprintf "\t\texport interface %s {}" (entityNameToString class_))
+    let classesAsString = classes |> Seq.map (fun class_ -> sprintf "        export interface %s { }" (entityNameToString class_))
 
 
     //Concat them
 
     let allAsStrings = [classesAsString; recordsAsStrings; unionsAsString] |> Seq.concat
 
-    let contents = String.concat "\n" allAsStrings
+    let contents = String.concat "\r\n" allAsStrings
 
-    let withModuleWrapping = sprintf "\texport namespace %s {\n%s\n\t}" namespacename contents
+    let withModuleWrapping = sprintf "    export namespace %s {\r\n%s\r\n    }" namespacename contents
     withModuleWrapping
 
 let argumentsToString (arguments:IList<IList<FSharpParameter>>) =
     arguments
-    |> Seq.mapi(fun i parameterGroup -> (namedOrNumber parameterGroup.[0].DisplayName i) + ":" + (typeToTS parameterGroup.[0].Type))
+    |> Seq.mapi(fun i parameterGroup -> (namedOrNumber parameterGroup.[0].DisplayName i) + ": " + (typeToTS parameterGroup.[0].Type))
     |> String.concat ", "
 
 let functionAsStrings (functions:seq<FSharpMemberOrFunctionOrValue>) =
     functions
-    |> Seq.map(fun value -> sprintf "\texport interface %s {\n\t\t(%s):%s\n\t}\n" (memberNameToString value) (argumentsToString value.CurriedParameterGroups) (typeToTS value.ReturnParameter.Type))
-    |> String.concat "\n"
+    |> Seq.map(fun value -> sprintf "    export interface %s {\r\n        (%s): %s\r\n    }\r\n" (memberNameToString value) (argumentsToString value.CurriedParameterGroups) (typeToTS value.ReturnParameter.Type))
+    |> String.concat "\r\n"

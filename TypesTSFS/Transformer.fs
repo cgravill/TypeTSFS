@@ -84,7 +84,7 @@ let fromFSharpViaWebSharperToTypeScript projectFile moduleTargetName outputPath 
 
     let groupedByNamespace = fewerOfThem |> Array.groupBy(fun entity -> entity.AccessPath)
 
-    let namespacesAsStrings = groupedByNamespace |> Array.map EmitTS.entityToString |> String.concat "\n\n"
+    let namespacesAsStrings = groupedByNamespace |> Array.map EmitTS.entityToString |> String.concat "\r\n\r\n"
 
 
     //TODO: test which of these are needed, also what do they get transformed to in WebSharper?
@@ -92,17 +92,17 @@ let fromFSharpViaWebSharperToTypeScript projectFile moduleTargetName outputPath 
     //let wasFSharpMapUsed = allOfThem |> Seq.choose (fun element -> element.TryFullName) |> Seq.exists (fun fullName -> fullName.Contains "Microsoft.FSharp.Collections.FSharpMap")
 
     let opaqueNamespaces =
-        "\texport namespace Opaque {
-\t\texport interface FSharpMap<K,V> {}
-\t\texport interface Dictionary<K,V> {}
-\t\texport interface FSharpTuple {} 
-\t}"
+        "    export namespace Opaque {\r\n" +
+        "        export interface FSharpMap<K, V> { }\r\n" +
+        "        export interface Dictionary<K, V> { }\r\n" +
+        "        export interface FSharpTuple { }\r\n" +
+        "    }"
 
     let functionAsStrings = EmitTS.functionAsStrings jsAPI.MembersFunctionsAndValues
 
     let warning = "//These interfaces are code generated from F#, any changes to this file will be lost."
     let topNamespace = "export namespace ExperimentalGeneratedInterfaces {"
 
-    let all = warning + "\n" + topNamespace + "\n\n" + namespacesAsStrings + "\n\n" + opaqueNamespaces + "\n\n" + functionAsStrings + "\n}"
+    let all = warning + "\r\n" + topNamespace + "\r\n\r\n" + namespacesAsStrings + "\r\n\r\n" + opaqueNamespaces + "\r\n\r\n" + functionAsStrings + "\r\n}"
 
     System.IO.File.WriteAllText(outputPath,all)
