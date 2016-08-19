@@ -11,6 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleWSTS", "SampleWSTS\Sa
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TypesTSFSTest", "TypesTSFSTest\TypesTSFSTest.fsproj", "{836EC0D7-FA90-45C1-86B8-7A8354384CF1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{75680FB9-52EF-474A-9647-42B8C06BDAD0}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
