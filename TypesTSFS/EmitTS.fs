@@ -178,12 +178,20 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
 
     let classes = nested |> Seq.filter (fun entity -> entity.IsFSharp && (entity.IsClass || entity.IsInterface))
 
+    //TODO: pull out more details
     let classesAsString = classes |> Seq.map (fun class_ -> sprintf "        export interface %s { }" (entityNameToString class_))
 
 
+    //Opaques -- hidden implementations
+
+    let opaques = nested |> Seq.filter (fun entity -> entity.IsFSharp && entity.IsOpaque)
+
+    //Should these be aliases for any instead?
+    let opaquesAsString = opaques |> Seq.map (fun class_ -> sprintf "        export interface %s { }" (entityNameToString class_))
+
     //Concat them
 
-    let allAsStrings = [classesAsString; recordsAsStrings; unionsAsString] |> Seq.concat
+    let allAsStrings = [classesAsString; opaquesAsString; recordsAsStrings; unionsAsString] |> Seq.concat
 
     let contents = String.concat "\r\n" allAsStrings
 
