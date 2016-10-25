@@ -1,12 +1,14 @@
 source https://api.nuget.org/v3/index.json
 
+redirects: on
 
-nuget FSharp.Compiler.Service >= 6.0.2
-nuget FSharp.Compiler.Service.ProjectCracker >= 6.0.2
+nuget FSharp.Core 4.0.0.1
+nuget FSharp.Compiler.Service ~> 8.0.0
+nuget FSharp.Compiler.Service.ProjectCracker ~> 8.0.0
 nuget WebSharper
 nuget FsUnit.xUnit
-nuget xunit.runner.console >= 2.1
+nuget xunit.runner.console ~> 2.1
 //https://github.com/fsprojects/Paket/issues/516#issuecomment-124178320
-nuget xunit.runner.visualstudio >= 2.1 version_in_path: true
+nuget xunit.runner.visualstudio ~> 2.1 version_in_path: true
 
 nuget Unquote >= 3.1.2
