@@ -116,6 +116,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="ProjectManager.fs" />
     <Compile Include="Tests.fs" />
+    <Compile Include="WebSharperTests.fs" />
     <Compile Include="JsonNetTests.fs" />
     <Content Include="app.config" />
     <None Include="paket.references" />
