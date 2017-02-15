@@ -16,11 +16,11 @@ let xxx = 3 + 4
 let fff () = xxx + xxx
     """
 
-    let checkResults = ProjectManager.extractEntitites sampleText
+    let entities = ProjectManager.extractEntitites sampleText
 
-    checkResults.AssemblySignature.Entities.Count =! 1
+    entities.Count =! 1
 
-    let entity = checkResults.AssemblySignature.Entities.[0]
+    let entity = entities.[0]
 
     entity.DisplayName =! "M"
 

@@ -149,8 +149,8 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
         else
             AllJustNames cases
 
-    let caseAsString (all_cases) (case:FSharpUnionCase) =
-        let optional = if (Seq.length all_cases) = 1 then "" else "?" 
+    let caseAsString (allCases) (case:FSharpUnionCase) =
+        let optional = if (Seq.length allCases) = 1 then "" else "?" 
         match case with
         | JustName name -> sprintf "            %s%s: string;" name optional
         | Type singleType -> sprintf "            %s%s: %s;" case.DisplayName optional (typeToTS singleType)

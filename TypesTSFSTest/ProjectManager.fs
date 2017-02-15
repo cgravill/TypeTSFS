@@ -59,4 +59,4 @@ let extractEntitites sourceText =
 
     let wholeProjectResults = checker.ParseAndCheckProject(projectOptions) |> Async.RunSynchronously
 
-    wholeProjectResults
+    wholeProjectResults.AssemblySignature.Entities

@@ -1,4 +1,4 @@
-﻿module JsonNetTests
+﻿module WebSharperTests
 
 open Xunit
 
@@ -37,6 +37,8 @@ type Circle = {
             ::?: OnlySupportSingleTypeCases;
         }
     }"""
+
+    //TODO: get rid of that List<T>
 
     Assert.Equal(expected.[2..], output)
 
