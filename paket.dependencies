@@ -1,10 +1,11 @@
 source https://api.nuget.org/v3/index.json
 
+framework: net451
 redirects: on
 
 nuget FSharp.Core 4.0.0.1
-nuget FSharp.Compiler.Service ~> 8.0.0
-nuget FSharp.Compiler.Service.ProjectCracker ~> 8.0.0
+nuget FSharp.Compiler.Service ~> 10.0.1
+nuget FSharp.Compiler.Service.ProjectCracker ~> 10.0.1
 nuget WebSharper
 nuget FsUnit.xUnit
 nuget xunit.runner.console ~> 2.1
