@@ -6,3 +6,4 @@ FSharp.Compiler.Service
 FSharp.Compiler.Service.ProjectCracker
 Unquote
 FSharp.Core
+Newtonsoft.Json
