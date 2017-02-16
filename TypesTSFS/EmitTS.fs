@@ -64,6 +64,13 @@ let rec typeToTS (fsharpType:FSharpType) =
                 else
                     stem
 
+let onlyExportedEntities (possibleEntities: FSharpEntity[]) =
+    possibleEntities
+    |> Array.filter(fun entity ->
+        match entity.DisplayName with
+        | "List" -> false
+        | _ -> true)
+
 let parameterAndTypeToTS parameterName (fsharpType:FSharpType) =
 
     //We have to check it's not some of these or will throw on accessing TypeDefinition
@@ -99,10 +106,14 @@ let entityNameToString (entity:FSharpEntity) = nameAndParametersToString entity.
 let memberNameToString (entity:FSharpMemberOrFunctionOrValue) = nameAndParametersToString entity.DisplayName entity.GenericParameters
 
 let entityToString (namespacename:string, nested:FSharpEntity[]) =
-      
+
+    //Restrict to only entities that should be exported
+
+    let restrictedEntities = onlyExportedEntities nested
+    
     //Records
 
-    let records = nested |> Seq.filter (fun entity -> entity.IsFSharpRecord)
+    let records = restrictedEntities |> Seq.filter (fun entity -> entity.IsFSharpRecord)
 
     let recordFieldsToString record = String.concat "\r\n" (record |> Seq.map (fun (recordField:FSharpField) -> sprintf "            %s;" (parameterAndTypeToTS recordField.DisplayName recordField.FieldType)))
     let recordTypeGenericParameters (entity:FSharpEntity) =
@@ -119,7 +130,7 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
 
     //Unions
 
-    let unions = nested |> Seq.filter (fun entity -> entity.IsFSharpUnion)
+    let unions = restrictedEntities |> Seq.filter (fun entity -> entity.IsFSharpUnion)
 
     let isNumber (type_:FSharpType) =
 
@@ -176,7 +187,7 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
 
     //Classes
 
-    let classes = nested |> Seq.filter (fun entity -> entity.IsFSharp && (entity.IsClass || entity.IsInterface))
+    let classes = restrictedEntities |> Seq.filter (fun entity -> entity.IsFSharp && (entity.IsClass || entity.IsInterface))
 
     //TODO: pull out more details
     let classesAsString = classes |> Seq.map (fun class_ -> sprintf "        export interface %s { }" (entityNameToString class_))
@@ -184,7 +195,7 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
 
     //Opaques -- hidden implementations
 
-    let opaques = nested |> Seq.filter (fun entity -> entity.IsFSharp && entity.IsOpaque)
+    let opaques = restrictedEntities |> Seq.filter (fun entity -> entity.IsFSharp && entity.IsOpaque)
 
     //Should these be aliases for any instead?
     let opaquesAsString = opaques |> Seq.map (fun class_ -> sprintf "        export interface %s { }" (entityNameToString class_))

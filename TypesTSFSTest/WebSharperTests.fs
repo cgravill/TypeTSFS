@@ -32,13 +32,7 @@ type Circle = {
             Radius: number;
             Numbers: Array<number>;
         }
-        export interface List<T> {
-            []?: string;
-            ::?: OnlySupportSingleTypeCases;
-        }
     }"""
-
-    //TODO: get rid of that List<T>
 
     Assert.Equal(expected.[2..], output)
 
