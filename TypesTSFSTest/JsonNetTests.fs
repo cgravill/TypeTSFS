@@ -24,7 +24,7 @@ type Shape =
 
     let nestedEntities = Explore.findEntities moduleEntity
 
-    let output = EmitTS.entityToString("bob", nestedEntities |> Array.ofSeq)
+    let output = EmitTS.entityToString EmitTS.Style.JsonNet "bob" (nestedEntities |> Array.ofSeq)
     
     //Json.Net instance: {"Case":"Circle","Fields":[{"Radius":4,"Numbers":[1,4,3]}]}
 
@@ -55,8 +55,8 @@ type Shape =
         }
     }"""
 
-    //Assert.Equal(expected.[2..], output)
+    Assert.Equal(jsonNetExpected.[2..], output)
 
-    let circleEntity = nestedEntities |> Seq.head
+    //let circleEntity = nestedEntities |> Seq.head
 
     ()

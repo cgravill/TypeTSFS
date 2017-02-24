@@ -84,7 +84,9 @@ let fromFSharpViaWebSharperToTypeScript projectFile moduleTargetName outputPath 
 
     let groupedByNamespace = fewerOfThem |> Array.groupBy(fun entity -> entity.AccessPath)
 
-    let namespacesAsStrings = groupedByNamespace |> Array.map EmitTS.entityToString |> String.concat "\r\n\r\n"
+    let enityToString = EmitTS.entityToString EmitTS.Style.WebSharper
+
+    let namespacesAsStrings = groupedByNamespace |> Array.map (fun (a,b) -> enityToString a b) |> String.concat "\r\n\r\n"
 
 
     //TODO: test which of these are needed, also what do they get transformed to in WebSharper?

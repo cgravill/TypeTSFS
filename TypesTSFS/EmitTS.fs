@@ -3,6 +3,10 @@
 open Microsoft.FSharp.Compiler.SourceCodeServices
 type IList<'a> = System.Collections.Generic.IList<'a>
 
+type Style = 
+    | WebSharper
+    | JsonNet
+
 let namedOrNumber name i =
     match name with
     | "" -> ("p" + string i)
@@ -105,7 +109,7 @@ let nameAndParametersToString name parameters =
 let entityNameToString (entity:FSharpEntity) = nameAndParametersToString entity.DisplayName entity.GenericParameters
 let memberNameToString (entity:FSharpMemberOrFunctionOrValue) = nameAndParametersToString entity.DisplayName entity.GenericParameters
 
-let entityToString (namespacename:string, nested:FSharpEntity[]) =
+let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) =
 
     //Restrict to only entities that should be exported
 
@@ -173,7 +177,10 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
         else
             "\"" + case.DisplayName + "\""
 
-    let casesAsString (cases:IList<FSharpUnionCase>) = cases |> Seq.map (cases |> caseAsString) |> String.concat "\r\n"
+    let casesAsString (cases:IList<FSharpUnionCase>) =
+        match style with
+        | WebSharper -> cases |> Seq.map (cases |> caseAsString) |> String.concat "\r\n"
+        | JsonNet -> "            Case: String;" + "\r\n" + "            Fields: object"
     
     let namesAndNumbersCasesAsString = Seq.map nameOrNumberToString >> String.concat " | "
 
@@ -181,9 +188,9 @@ let entityToString (namespacename:string, nested:FSharpEntity[]) =
 
 
     let unionsAsString = unions |> Seq.map (fun union -> match union.UnionCases with
-                                                            | ComplexTypes cases -> sprintf "        export interface %s {\r\n%s\r\n        }" (entityNameToString union) (casesAsString cases)
-                                                            | NamesAndNumbers cases -> sprintf "        export type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases)
-                                                            | AllJustNames cases -> sprintf "        export type %s = %s" union.DisplayName (simpleCasesAsString cases))
+                                                         | ComplexTypes cases -> sprintf "        export interface %s {\r\n%s\r\n        }" (entityNameToString union) (casesAsString cases)
+                                                         | NamesAndNumbers cases -> sprintf "        export type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases)
+                                                         | AllJustNames cases -> sprintf "        export type %s = %s" union.DisplayName (simpleCasesAsString cases))
 
     //Classes
 

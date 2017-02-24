@@ -22,7 +22,7 @@ type Circle = {
 
     let nestedEntities = Explore.findEntities moduleEntity
 
-    let output = EmitTS.entityToString("bob", nestedEntities |> Array.ofSeq)
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "bob" (nestedEntities |> Array.ofSeq)
     
     let expected =
         """
@@ -60,7 +60,7 @@ type Shape =
 
     let nestedEntities = Explore.findEntities moduleEntity
 
-    let output = EmitTS.entityToString("bob", nestedEntities |> Array.ofSeq)
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "bob" (nestedEntities |> Array.ofSeq)
     
     //WebSharper instance: 
 
