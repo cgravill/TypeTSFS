@@ -8,10 +8,12 @@ let ``Discriminated union``() =
     let sampleText = """
 module Shapes
 
-type Circle = {
-    Radius: int;
-    Numbers: List<int>;
-}
+type Circle = 
+    { Radius : int
+      Numbers : List<int> }
+
+type Shape = 
+    | Circle of Circle
     """
 
     let entities = ProjectManager.extractEntitites sampleText
@@ -24,6 +26,8 @@ type Circle = {
 
     let output = EmitTS.entityToString("bob", nestedEntities |> Array.ofSeq)
     
+    //Json.Net instance: {"Case":"Circle","Fields":[{"Radius":4,"Numbers":[1,4,3]}]}
+
     let expected =
         """
     export namespace bob {
@@ -32,9 +36,26 @@ type Circle = {
             Radius: number;
             Numbers: Array<number>;
         }
+        export interface Shape {
+            Circle: Shapes.Circle;
+        }
     }"""
 
-    Assert.Equal(expected.[2..], output)
+    let jsonNetExpected =
+        """
+    export namespace bob {
+        export interface Shapes { }
+        export interface Circle {
+            Radius: number;
+            Numbers: Array<number>;
+        }
+        export interface Shape {
+            Case: String;
+            Fields: object
+        }
+    }"""
+
+    //Assert.Equal(expected.[2..], output)
 
     let circleEntity = nestedEntities |> Seq.head
 
