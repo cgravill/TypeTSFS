@@ -173,15 +173,12 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
 
     let casesAsStringJsonNet (allCases:IList<FSharpUnionCase>) =
         allCases
-        |> Seq.filter (fun case -> case.UnionCaseFields.Count > 0) //Filter markers
-        |> Seq.map (fun case -> 
+        |> Seq.collect(fun case -> case.UnionCaseFields |> Seq.map (fun field -> field.FieldType |> typeToTS))
+        |> String.concat " | "
 
-            match case.UnionCaseFields.Count with
-            | 0 -> failwithf "Suprising number of fields on: %A" case 
-            | 1 ->
-                let field = case.UnionCaseFields.[0].FieldType
-                typeToTS field
-            | _ -> sprintf "any /*Union case fields with >1 unsupported, found on case: %A */" case)
+    let caseNamesJsonNet (allCases:IList<FSharpUnionCase>) =
+        allCases
+        |> Seq.map (fun case -> "\"" + case.DisplayName + "\"")
         |> String.concat " | "
 
     let nameOrNumberToString (case:FSharpUnionCase) =
@@ -193,7 +190,8 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
     let casesAsString (cases:IList<FSharpUnionCase>) =
         match style with
         | WebSharper -> cases |> Seq.map (cases |> caseAsStringWebSharper) |> String.concat "\r\n"
-        | JsonNet -> "            Case: String;" + "\r\n" + "            Fields: " + (casesAsStringJsonNet cases)
+        //| JsonNet -> "            Case: String;" + "\r\n" + "            Fields: Array<any>"
+        | JsonNet -> sprintf "            Case: %s\r\n            Fields: Array<%s>" (caseNamesJsonNet cases) (casesAsStringJsonNet cases)
     
     let namesAndNumbersCasesAsString = Seq.map nameOrNumberToString >> String.concat " | "
 

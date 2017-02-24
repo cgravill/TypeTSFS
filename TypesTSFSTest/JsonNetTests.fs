@@ -38,7 +38,7 @@ type Shape =
         }
         export interface Shape {
             Case: String;
-            Fields: object
+            Fields: Array<Shapes | Circle>
         }
     }"""
 

@@ -27,3 +27,7 @@ JsonConvert.SerializeObject(circleRecord)
 let shapeUnion : Shape = Shape.MaybeCircle (Some circleRecord)
 
 JsonConvert.SerializeObject(shapeUnion)
+
+let square : Shape = Shape.Square { Length = 5 }
+
+JsonConvert.SerializeObject(square)

@@ -103,7 +103,11 @@ let fromFSharpToTypeScript style projectFile moduleTargetName outputPath =
     let functionAsStrings = EmitTS.functionAsStrings jsAPI.MembersFunctionsAndValues
 
     let warning = "//These interfaces are code generated from F#, any changes to this file will be lost."
-    let topNamespace = "export namespace ExperimentalGeneratedInterfaces {"
+    let topNamespace = 
+        match style with
+        | EmitTS.Style.WebSharper -> "export namespace WebSharperGeneratedInterfaces {"
+        | EmitTS.Style.JsonNet -> "export namespace JsonNetGeneratedInterfaces {"
+
 
     let all = warning + "\r\n" + topNamespace + "\r\n\r\n" + namespacesAsStrings + "\r\n\r\n" + opaqueNamespaces + "\r\n\r\n" + functionAsStrings + "\r\n}"
 
