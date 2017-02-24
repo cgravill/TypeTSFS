@@ -16,6 +16,9 @@ let something = CustomGeneric<int>()
 let makeRectangle() =
     {Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}
 
+let makeRectangleDiscrimatedUnion() =
+    Shapes.ShapeWith.Rectangle {Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}
+
 let makeRectangleShape() =
     Json.Serialize (Shapes.ShapeWith.Rectangle{Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3})
 

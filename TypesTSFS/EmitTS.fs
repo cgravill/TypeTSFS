@@ -180,7 +180,7 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
     let casesAsString (cases:IList<FSharpUnionCase>) =
         match style with
         | WebSharper -> cases |> Seq.map (cases |> caseAsString) |> String.concat "\r\n"
-        | JsonNet -> "            Case: String;" + "\r\n" + "            Fields: object"
+        | JsonNet -> "            Case: String;" + "\r\n" + "            Fields: any"
     
     let namesAndNumbersCasesAsString = Seq.map nameOrNumberToString >> String.concat " | "
 

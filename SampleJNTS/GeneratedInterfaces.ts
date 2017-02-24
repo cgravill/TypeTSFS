@@ -9,15 +9,26 @@ export namespace ExperimentalGeneratedInterfaces {
 
     }
 
+    export namespace Microsoft.FSharp.Core {
+        export interface Unit { }
+        export interface Option<T> {
+            Case: String;
+            Fields: any
+        }
+    }
+
     export namespace Shapes {
         export interface Rectangle {
             Width: number;
             Height: number;
         }
-    }
-
-    export namespace Microsoft.FSharp.Core {
-        export interface Unit { }
+        export interface Square {
+            Length: number;
+        }
+        export interface ShapeWith {
+            Case: String;
+            Fields: any
+        }
     }
 
     export namespace Opaque {
@@ -32,6 +43,10 @@ export namespace ExperimentalGeneratedInterfaces {
 
     export interface makeRectangle {
         (p0: void): Shapes.Rectangle
+    }
+
+    export interface makeRectangleDiscrimatedUnion {
+        (p0: void): Shapes.ShapeWith
     }
 
     export interface makeRectangleShape {
