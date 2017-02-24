@@ -15,7 +15,7 @@ export namespace ExperimentalGeneratedInterfaces {
         }
         export interface ShapeWith {
             Case: String;
-            Fields: Rectangle | Square | MaybeCircle
+            Fields: Shapes.Rectangle | Shapes.Square | Microsoft.FSharp.Core.Option<Shapes.Circle>
         }
     }
 
@@ -31,7 +31,7 @@ export namespace ExperimentalGeneratedInterfaces {
         export interface Unit { }
         export interface Option<T> {
             Case: String;
-            Fields: None | Some
+            Fields: T
         }
     }
 

@@ -16,7 +16,7 @@ type Circle =
 type Shape = 
     | Rectangle of Rectangle
     | Square of Square
-    | Circle of Circle
+    | MaybeCircle of Circle option
 
 let circleRecord = 
     { Radius = 4
@@ -24,6 +24,6 @@ let circleRecord =
 
 JsonConvert.SerializeObject(circleRecord)
 
-let shapeUnion : Shape = Shape.Circle circleRecord
+let shapeUnion : Shape = Shape.MaybeCircle (Some circleRecord)
 
 JsonConvert.SerializeObject(shapeUnion)

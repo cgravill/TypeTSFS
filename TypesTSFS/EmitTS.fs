@@ -173,7 +173,15 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
 
     let casesAsStringJsonNet (allCases:IList<FSharpUnionCase>) =
         allCases
-        |> Seq.map (fun case -> case.DisplayName)
+        |> Seq.filter (fun case -> case.UnionCaseFields.Count > 0) //Filter markers
+        |> Seq.map (fun case -> 
+
+            match case.UnionCaseFields.Count with
+            | 0 -> failwithf "Suprising number of fields on: %A" case 
+            | 1 ->
+                let field = case.UnionCaseFields.[0].FieldType
+                typeToTS field
+            | _ -> sprintf "any /*Union case fields with >1 unsupported, found on case: %A */" case)
         |> String.concat " | "
 
     let nameOrNumberToString (case:FSharpUnionCase) =
