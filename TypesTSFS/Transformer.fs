@@ -34,7 +34,7 @@ let isHiddenFunction (possiblyAbbreviated:FSharpEntity) =
     else
         false
 
-let fromFSharpViaWebSharperToTypeScript projectFile moduleTargetName outputPath =
+let fromFSharpToTypeScript style projectFile moduleTargetName outputPath =
 
     let normalisedProjectPath = System.IO.Path.GetFullPath projectFile
 
@@ -84,7 +84,7 @@ let fromFSharpViaWebSharperToTypeScript projectFile moduleTargetName outputPath 
 
     let groupedByNamespace = fewerOfThem |> Array.groupBy(fun entity -> entity.AccessPath)
 
-    let enityToString = EmitTS.entityToString EmitTS.Style.WebSharper
+    let enityToString = EmitTS.entityToString style
 
     let namespacesAsStrings = groupedByNamespace |> Array.map (fun (a,b) -> enityToString a b) |> String.concat "\r\n\r\n"
 
@@ -108,3 +108,7 @@ let fromFSharpViaWebSharperToTypeScript projectFile moduleTargetName outputPath 
     let all = warning + "\r\n" + topNamespace + "\r\n\r\n" + namespacesAsStrings + "\r\n\r\n" + opaqueNamespaces + "\r\n\r\n" + functionAsStrings + "\r\n}"
 
     System.IO.File.WriteAllText(outputPath,all)
+
+
+let fromFSharpViaWebSharperToTypeScript = fromFSharpToTypeScript EmitTS.WebSharper
+let fromFSharpViaJsonNetToTypeScript = fromFSharpToTypeScript EmitTS.JsonNet

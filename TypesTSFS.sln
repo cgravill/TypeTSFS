@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{1BEC2F6C-4A62-4149-BC7C-0C38CF27215D}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+	EndProjectSection
+EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TypesTSFS", "TypesTSFS\TypesTSFS.fsproj", "{D9C767CC-651F-4272-B71E-CD64EE309205}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SampleWS", "SampleWS\SampleWS.fsproj", "{1CACBF55-019B-4037-B509-53BD34AFA3C0}"
@@ -15,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		paket.dependencies = paket.dependencies
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleJNTS", "SampleJNTS\SampleJNTS.csproj", "{663D6576-A340-47B7-9CD4-EB140FC7D89E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +45,10 @@ Global
 		{836EC0D7-FA90-45C1-86B8-7A8354384CF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{836EC0D7-FA90-45C1-86B8-7A8354384CF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{836EC0D7-FA90-45C1-86B8-7A8354384CF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{663D6576-A340-47B7-9CD4-EB140FC7D89E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{663D6576-A340-47B7-9CD4-EB140FC7D89E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{663D6576-A340-47B7-9CD4-EB140FC7D89E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{663D6576-A340-47B7-9CD4-EB140FC7D89E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

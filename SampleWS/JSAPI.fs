@@ -9,9 +9,9 @@ type CustomGeneric<'t>() =
 
 let something = CustomGeneric<int>()
 
-let makeShapes() =
+(*let makeShapes() =
     let rect = Shapes.ShapeWith.Rectangle{Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}
-    rect
+    rect*)
 
 let makeRectangle() =
     {Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}
@@ -23,7 +23,7 @@ let makeRectangleShape() =
 let makeRectangles() = 
     [{Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}; {Shapes.Rectangle.Width = 4; Shapes.Rectangle.Height = 1}]
 
-let makeRectanglesEncode() =
+(*let makeRectanglesEncode() =
     Json.Encode [{Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}; {Shapes.Rectangle.Width = 4; Shapes.Rectangle.Height = 1}]
 
 let makeRectanglesJSON() =
@@ -37,7 +37,7 @@ let makeRectangleSerialize() =
     Json.Serialize {Shapes.Rectangle.Width = 2; Shapes.Rectangle.Height = 3}
 
 let getSingleDU() =
-    Json.Encode (Shapes.SingleDU.Single 6)
+    Json.Encode (Shapes.SingleDU.Single 6)*)
 
 let makeLookUp() =
     Map.empty |> Map.add 0 {Shapes.Rectangle.Width = 4; Shapes.Rectangle.Height = 10}

@@ -2,7 +2,7 @@
 [<ReflectedDefinition>]
 module JSONAPI
 
-open WebSharper
+(*open WebSharper
 
 let makeRectangle() =
-    Json.Encode (JSAPI.makeRectangle())
+    Json.Encode (JSAPI.makeRectangle())*)
