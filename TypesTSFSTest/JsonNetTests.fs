@@ -28,19 +28,6 @@ type Shape =
     
     //Json.Net instance: {"Case":"Circle","Fields":[{"Radius":4,"Numbers":[1,4,3]}]}
 
-    let expected =
-        """
-    export namespace bob {
-        export interface Shapes { }
-        export interface Circle {
-            Radius: number;
-            Numbers: Array<number>;
-        }
-        export interface Shape {
-            Circle: Shapes.Circle;
-        }
-    }"""
-
     let jsonNetExpected =
         """
     export namespace bob {
@@ -56,7 +43,5 @@ type Shape =
     }"""
 
     Assert.Equal(jsonNetExpected.[2..], output)
-
-    //let circleEntity = nestedEntities |> Seq.head
 
     ()
