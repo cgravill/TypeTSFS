@@ -164,23 +164,28 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
         else
             AllJustNames cases
 
-    let caseAsString (allCases) (case:FSharpUnionCase) =
+    let caseAsStringWebSharper (allCases) (case:FSharpUnionCase) =
         let optional = if (Seq.length allCases) = 1 then "" else "?" 
         match case with
         | JustName name -> sprintf "            %s%s: string;" name optional
         | Type singleType -> sprintf "            %s%s: %s;" case.DisplayName optional (typeToTS singleType)
         | Types types -> sprintf "            %s%s: %s;" case.DisplayName optional "OnlySupportSingleTypeCases"
 
+    let casesAsStringJsonNet (allCases:IList<FSharpUnionCase>) =
+        allCases
+        |> Seq.map (fun case -> case.DisplayName)
+        |> String.concat " | "
+
     let nameOrNumberToString (case:FSharpUnionCase) =
         if case.UnionCaseFields.Count = 1 && isNumber case.UnionCaseFields.[0].FieldType then
             sprintf "{ %s: number }" case.DisplayName
         else
             "\"" + case.DisplayName + "\""
-
+                
     let casesAsString (cases:IList<FSharpUnionCase>) =
         match style with
-        | WebSharper -> cases |> Seq.map (cases |> caseAsString) |> String.concat "\r\n"
-        | JsonNet -> "            Case: String;" + "\r\n" + "            Fields: any"
+        | WebSharper -> cases |> Seq.map (cases |> caseAsStringWebSharper) |> String.concat "\r\n"
+        | JsonNet -> "            Case: String;" + "\r\n" + "            Fields: " + (casesAsStringJsonNet cases)
     
     let namesAndNumbersCasesAsString = Seq.map nameOrNumberToString >> String.concat " | "
 

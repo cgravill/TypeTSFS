@@ -1,6 +1,24 @@
 //These interfaces are code generated from F#, any changes to this file will be lost.
 export namespace ExperimentalGeneratedInterfaces {
 
+    export namespace Shapes {
+        export interface Circle {
+            Radius: number;
+            Numbers: Array<number>;
+        }
+        export interface Rectangle {
+            Width: number;
+            Height: number;
+        }
+        export interface Square {
+            Length: number;
+        }
+        export interface ShapeWith {
+            Case: String;
+            Fields: Rectangle | Square | MaybeCircle
+        }
+    }
+
     export namespace JSAPI {
         export interface CustomGeneric<t> { }
     }
@@ -13,21 +31,7 @@ export namespace ExperimentalGeneratedInterfaces {
         export interface Unit { }
         export interface Option<T> {
             Case: String;
-            Fields: any
-        }
-    }
-
-    export namespace Shapes {
-        export interface Rectangle {
-            Width: number;
-            Height: number;
-        }
-        export interface Square {
-            Length: number;
-        }
-        export interface ShapeWith {
-            Case: String;
-            Fields: any
+            Fields: None | Some
         }
     }
 

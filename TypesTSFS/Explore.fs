@@ -45,7 +45,8 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                                                 |> Seq.filter (fun field -> not field.FieldType.IsFunctionType)
                                                 |> Seq.map (fun field -> field.FieldType)
                                                 |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
-                                                |> Seq.map (fun type2 -> type2.TypeDefinition |> innerFind)
+                                                |> Seq.map (fun type2 -> type2.TypeDefinition)
+                                                |> Seq.map innerFind
                                                 |> Seq.concat
                                                 |> Seq.cache //Debug
 
@@ -55,11 +56,10 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                                                 |> Seq.filter (fun field -> not field.FieldType.IsFunctionType)
                                                 |> Seq.map (fun field -> field.FieldType)
                                                 |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
-                                                |> Seq.map (fun type2 -> type2.GenericArguments
-                                                                            |> Seq.filter (fun argument -> argument.HasTypeDefinition)
-                                                                            |> Seq.map (fun argument -> argument.TypeDefinition))
-                                                |> Seq.map (fun entities -> entities |> Seq.map innerFind)
-                                                |> Seq.concat
+                                                |> Seq.collect (fun type2 -> type2.GenericArguments
+                                                                             |> Seq.filter (fun argument -> argument.HasTypeDefinition)
+                                                                             |> Seq.map (fun argument -> argument.TypeDefinition))
+                                                |> Seq.map innerFind
                                                 |> Seq.concat
                                                 |> Seq.cache //Debug
 
@@ -69,14 +69,16 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                                                 |> Seq.map (fun field -> field.FieldType)
                                                 |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
                                                 |> Seq.collect (fun type2 -> type2.GenericArguments)
-                                                |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
-                                                |> Seq.map (fun argument -> argument.GenericArguments
+                                                |> Seq.filter (fun type3 -> type3.HasTypeDefinition)
+                                                |> Seq.collect (fun argument -> argument.GenericArguments
                                                                                 |> Seq.filter (fun argument -> argument.HasTypeDefinition)
                                                                                 |> Seq.map (fun argument -> argument.TypeDefinition))
-                                                |> Seq.map (fun entities -> entities |> Seq.map innerFind)
-                                                |> Seq.concat
+                                                |> Seq.map innerFind
                                                 |> Seq.concat
                                                 |> Seq.cache //Debug
+                        
+                        //TODO: how to find the nth generic?
+
 
                     if topEntity.IsFSharpUnion then
                         
@@ -84,14 +86,28 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                         //printfn "%A" topEntity.FullName
 
                         yield! topEntity.UnionCases
-                                |> Seq.map (fun case -> case.UnionCaseFields
-                                                        |> Seq.map (fun field -> field.FieldType)
-                                                        |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
-                                                        |> Seq.map (fun type2 -> type2.TypeDefinition))
-                                |> Seq.map (fun fields -> fields |> Seq.map innerFind)
-                                |> Seq.concat
+                                |> Seq.collect (fun case -> case.UnionCaseFields
+                                                            |> Seq.map (fun field -> field.FieldType)
+                                                            |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
+                                                            |> Seq.map (fun type2 -> type2.TypeDefinition))
+                                |> Seq.map innerFind
                                 |> Seq.concat
                                 |> Seq.cache //Debug
+
+
+                        //1st generic
+                        yield! topEntity.UnionCases
+                                |> Seq.collect (fun case -> case.UnionCaseFields
+                                                            |> Seq.map (fun field -> field.FieldType)
+                                                            |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
+                                                            |> Seq.collect (fun type2 -> type2.GenericArguments
+                                                                                         |> Seq.filter (fun argument -> argument.HasTypeDefinition)
+                                                                                         |> Seq.map (fun argument -> argument.TypeDefinition)))
+                                |> Seq.map innerFind
+                                |> Seq.concat
+                                |> Seq.cache //Debug
+
+                        //TODO: how to find the nth generic?
 
                     yield!
                         topEntity.NestedEntities
@@ -153,7 +169,6 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                             |> Seq.concat
                             |> Seq.concat
                             |> Seq.cache //Debug
-
 
                     //TODO: handle functions
 
