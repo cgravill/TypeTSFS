@@ -113,6 +113,17 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                             |> Seq.concat
                             |> Seq.cache //Debug
 
+                        //Return parameter
+                        yield!
+                            topEntity.MembersFunctionsAndValues
+                            |> Seq.map (fun something -> something.ReturnParameter)
+                            |> Seq.map (fun parameter -> parameter.Type)
+                            |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
+                            |> Seq.map (fun type2 -> type2.TypeDefinition)
+                            |> Seq.map innerFind
+                            |> Seq.concat
+                            |> Seq.cache //Debug
+
                         //First generic
                         yield!
                             topEntity.MembersFunctionsAndValues
