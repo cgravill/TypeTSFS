@@ -191,7 +191,7 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
         match style with
         | WebSharper -> cases |> Seq.map (cases |> caseAsStringWebSharper) |> String.concat "\r\n"
         //| JsonNet -> "            Case: String;" + "\r\n" + "            Fields: Array<any>"
-        | JsonNet -> sprintf "            Case: %s\r\n            Fields: Array<%s>" (caseNamesJsonNet cases) (casesAsStringJsonNet cases)
+        | JsonNet -> sprintf "            Case: %s;\r\n            Fields: Array<%s>;" (caseNamesJsonNet cases) (casesAsStringJsonNet cases)
     
     let namesAndNumbersCasesAsString = Seq.map nameOrNumberToString >> String.concat " | "
 

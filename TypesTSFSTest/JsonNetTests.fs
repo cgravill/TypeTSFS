@@ -37,8 +37,8 @@ type Shape =
             Numbers: Array<number>;
         }
         export interface Shape {
-            Case: String;
-            Fields: Array<Shapes | Circle>
+            Case: "Circle";
+            Fields: Array<Shapes.Circle>;
         }
     }"""
 
