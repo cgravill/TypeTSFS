@@ -18,6 +18,10 @@ type Shape =
     | Square of Square
     | MaybeCircle of Circle option
 
+type Simple = 
+    | Triangle
+    | Girraffe
+
 let circleRecord = 
     { Radius = 4
       Numbers = [ 1; 4; 3 ] }
@@ -31,3 +35,7 @@ JsonConvert.SerializeObject(shapeUnion)
 let square : Shape = Shape.Square { Length = 5 }
 
 JsonConvert.SerializeObject(square)
+
+let simple = Simple.Triangle
+
+JsonConvert.SerializeObject(simple)

@@ -195,13 +195,15 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
     
     let namesAndNumbersCasesAsString = Seq.map nameOrNumberToString >> String.concat " | "
 
-    let simpleCasesAsString = Seq.map nameOrNumberToString >> String.concat " | "
-
-
-    let unionsAsString = unions |> Seq.map (fun union -> match union.UnionCases with
-                                                         | ComplexTypes cases -> sprintf "        export interface %s {\r\n%s\r\n        }" (entityNameToString union) (casesAsString cases)
-                                                         | NamesAndNumbers cases -> sprintf "        export type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases)
-                                                         | AllJustNames cases -> sprintf "        export type %s = %s" union.DisplayName (simpleCasesAsString cases))
+    let unionsAsString =
+        unions
+        |> Seq.map (fun union ->
+            match style, union.UnionCases with
+            | Style.JsonNet, ComplexTypes cases
+            | Style.WebSharper, ComplexTypes cases -> sprintf "        export interface %s {\r\n%s\r\n        }" (entityNameToString union) (casesAsString cases)
+            | Style.JsonNet, cases -> sprintf "        export interface %s { Case: %s }" union.DisplayName (caseNamesJsonNet cases)
+            | Style.WebSharper, NamesAndNumbers cases -> sprintf "        export type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases)
+            | Style.WebSharper, AllJustNames cases -> sprintf "        export type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases))
 
     //Classes
 
