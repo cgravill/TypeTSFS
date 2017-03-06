@@ -22,11 +22,11 @@ type Circle = {
 
     let nestedEntities = Explore.findEntities moduleEntity |> Array.ofSeq
 
-    let output = EmitTS.entityToString EmitTS.Style.WebSharper "bob" nestedEntities
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
     
     let expected =
         """
-    export namespace bob {
+    export namespace sample {
         export interface Shapes { }
         export interface Circle {
             Radius: number;
@@ -35,8 +35,6 @@ type Circle = {
     }"""
 
     Assert.Equal(expected.[2..], output)
-
-    ()
 
 [<Fact>]
 let ``Discriminated union``() =
@@ -60,13 +58,13 @@ type Shape =
 
     let nestedEntities = Explore.findEntities moduleEntity |> Array.ofSeq
 
-    let output = EmitTS.entityToString EmitTS.Style.WebSharper "bob" nestedEntities
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
     
     //WebSharper instance: 
 
     let expected =
         """
-    export namespace bob {
+    export namespace sample {
         export interface Shapes { }
         export interface Circle {
             Radius: number;
@@ -78,17 +76,6 @@ type Shape =
     }"""
 
     Assert.Equal(expected.[2..], output)
-
-    let circleEntity = nestedEntities |> Seq.head
-
-    ()
-
-[<Measure>] type degFahrenheit // temperature, Fahrenheit
-
-type Reading = {
-    time: System.DateTime
-    value: float<degFahrenheit^2>
-}
 
 [<Fact>]
 let ``Units of measure are ignored``() =
@@ -114,13 +101,13 @@ type Reading = {
 
     let nestedEntities = Explore.findEntities moduleEntity |> Array.ofSeq
 
-    let output = EmitTS.entityToString EmitTS.Style.WebSharper "bob" nestedEntities
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
     
     //WebSharper instance: 
 
     let expected =
         """
-    export namespace bob {
+    export namespace sample {
         export interface degFahrenheit { }
         export interface Temperature { }
         export interface Reading {
@@ -131,6 +118,39 @@ type Reading = {
 
     Assert.Equal(expected.[2..], output)
 
-    let circleEntity = nestedEntities |> Seq.head
+[<Fact>]
+let ``Tuples on unions``() =
 
-    ()
+    let sampleText = """
+module Space
+
+type Point =
+    | OneD of float
+    | TwoD of float * float
+    | ThreeD of float * float * float
+    | Special of float * bool
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+
+    let moduleEntity = entities.[0]
+
+    Assert.Equal("Space", moduleEntity.DisplayName)
+
+    let nestedEntities = Explore.findEntities moduleEntity |> Array.ofSeq
+
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
+
+    let expected =
+        """
+    export namespace sample {
+        export interface Space { }
+        export interface Point {
+            OneD?: number;
+            TwoD?: number[];
+            ThreeD?: number[];
+            Special?: (number | boolean)[];
+        }
+    }"""
+
+    Assert.Equal(expected.[2..], output)

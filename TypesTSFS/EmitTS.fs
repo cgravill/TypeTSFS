@@ -155,7 +155,7 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
         match case.UnionCaseFields.Count with
         | 0 -> JustName case.DisplayName
         | 1 -> Type case.UnionCaseFields.[0].FieldType
-        | _ -> Types case.UnionCaseFields.[0]
+        | _ -> Types case.UnionCaseFields
 
     let (|AllJustNames|NamesAndNumbers|ComplexTypes|) (cases:IList<FSharpUnionCase>) =
         if cases |> Seq.exists (fun case -> case.UnionCaseFields.Count > 0) then
@@ -171,7 +171,23 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
         match case with
         | JustName name -> sprintf "            %s%s: string;" name optional
         | Type singleType -> sprintf "            %s%s: %s;" case.DisplayName optional (typeToTS singleType)
-        | Types types -> sprintf "            %s%s: %s;" case.DisplayName optional "ERROR_OnlySingleTypeCasesImplemented"
+        | Types types ->
+
+            let stuff =
+                let uniqueTypes = types |> Seq.distinctBy(fun type1 -> type1.FieldType.TypeDefinition.DisplayName)
+                    
+                let typesAsString = 
+                    uniqueTypes
+                    |> Seq.map(fun field -> field.FieldType)
+                    |> Seq.map typeToTS
+                    |> String.concat " | "
+
+                if Seq.length uniqueTypes = 1 then
+                    typesAsString
+                else
+                    "(" + typesAsString + ")"
+            
+            sprintf "            %s%s: %s[];" case.DisplayName optional stuff
 
     let casesAsStringJsonNet (allCases:IList<FSharpUnionCase>) =
         allCases
