@@ -63,7 +63,9 @@ let rec typeToTS (fsharpType:FSharpType) =
                     | "Map" -> "Opaque.FSharpMap"
                     | x -> fsharpType.TypeDefinition.AccessPath + "." + x
 
-                if fsharpType.GenericArguments.Count > 0 then
+                if stem = "number" then
+                    stem
+                elif fsharpType.GenericArguments.Count > 0 then
                     stem + "<" + (fsharpType.GenericArguments |> Seq.map typeToTS |> String.concat ", ") + ">"
                 else
                     stem
