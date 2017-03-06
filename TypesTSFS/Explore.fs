@@ -41,41 +41,44 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                 else
 
                     if topEntity.IsFSharpRecord && topEntity.FullName <> "Microsoft.FSharp.Core.FSharpRef`1" then
-                        yield! topEntity.FSharpFields
-                                                |> Seq.filter (fun field -> not field.FieldType.IsFunctionType)
-                                                |> Seq.map (fun field -> field.FieldType)
-                                                |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
-                                                |> Seq.map (fun type2 -> type2.TypeDefinition)
-                                                |> Seq.map innerFind
-                                                |> Seq.concat
-                                                |> Seq.cache //Debug
+                        yield!
+                            topEntity.FSharpFields
+                            |> Seq.filter (fun field -> not field.FieldType.IsFunctionType)
+                            |> Seq.map (fun field -> field.FieldType)
+                            |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
+                            |> Seq.map (fun type2 -> type2.TypeDefinition)
+                            |> Seq.map innerFind
+                            |> Seq.concat
+                            |> Seq.cache //Debug
 
 
                         //1st generic
-                        yield! topEntity.FSharpFields
-                                                |> Seq.filter (fun field -> not field.FieldType.IsFunctionType)
-                                                |> Seq.map (fun field -> field.FieldType)
-                                                |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
-                                                |> Seq.collect (fun type2 -> type2.GenericArguments
-                                                                             |> Seq.filter (fun argument -> argument.HasTypeDefinition)
-                                                                             |> Seq.map (fun argument -> argument.TypeDefinition))
-                                                |> Seq.map innerFind
-                                                |> Seq.concat
-                                                |> Seq.cache //Debug
+                        yield!
+                            topEntity.FSharpFields
+                            |> Seq.filter (fun field -> not field.FieldType.IsFunctionType)
+                            |> Seq.map (fun field -> field.FieldType)
+                            |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
+                            |> Seq.collect (fun type2 -> type2.GenericArguments
+                                                            |> Seq.filter (fun argument -> argument.HasTypeDefinition)
+                                                            |> Seq.map (fun argument -> argument.TypeDefinition))
+                            |> Seq.map innerFind
+                            |> Seq.concat
+                            |> Seq.cache //Debug
 
                         //2nd generic
-                        yield! topEntity.FSharpFields
-                                                |> Seq.filter (fun field -> not field.FieldType.IsFunctionType)
-                                                |> Seq.map (fun field -> field.FieldType)
-                                                |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
-                                                |> Seq.collect (fun type2 -> type2.GenericArguments)
-                                                |> Seq.filter (fun type3 -> type3.HasTypeDefinition)
-                                                |> Seq.collect (fun argument -> argument.GenericArguments
-                                                                                |> Seq.filter (fun argument -> argument.HasTypeDefinition)
-                                                                                |> Seq.map (fun argument -> argument.TypeDefinition))
-                                                |> Seq.map innerFind
-                                                |> Seq.concat
-                                                |> Seq.cache //Debug
+                        yield!
+                            topEntity.FSharpFields
+                            |> Seq.filter (fun field -> not field.FieldType.IsFunctionType)
+                            |> Seq.map (fun field -> field.FieldType)
+                            |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
+                            |> Seq.collect (fun type2 -> type2.GenericArguments)
+                            |> Seq.filter (fun type3 -> type3.HasTypeDefinition)
+                            |> Seq.collect (fun argument -> argument.GenericArguments
+                                                            |> Seq.filter (fun argument -> argument.HasTypeDefinition)
+                                                            |> Seq.map (fun argument -> argument.TypeDefinition))
+                            |> Seq.map innerFind
+                            |> Seq.concat
+                            |> Seq.cache //Debug
                         
                         //TODO: how to find the nth generic?
 
@@ -85,27 +88,29 @@ let findEntities (startEntity:FSharpEntity) : seq<FSharpEntity> =
                         
                         //printfn "%A" topEntity.FullName
 
-                        yield! topEntity.UnionCases
-                                |> Seq.collect (fun case -> case.UnionCaseFields
-                                                            |> Seq.map (fun field -> field.FieldType)
-                                                            |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
-                                                            |> Seq.map (fun type2 -> type2.TypeDefinition))
-                                |> Seq.map innerFind
-                                |> Seq.concat
-                                |> Seq.cache //Debug
+                        yield!
+                            topEntity.UnionCases
+                            |> Seq.collect (fun case -> case.UnionCaseFields
+                                                        |> Seq.map (fun field -> field.FieldType)
+                                                        |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
+                                                        |> Seq.map (fun type2 -> type2.TypeDefinition))
+                            |> Seq.map innerFind
+                            |> Seq.concat
+                            |> Seq.cache //Debug
 
 
                         //1st generic
-                        yield! topEntity.UnionCases
-                                |> Seq.collect (fun case -> case.UnionCaseFields
-                                                            |> Seq.map (fun field -> field.FieldType)
-                                                            |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
-                                                            |> Seq.collect (fun type2 -> type2.GenericArguments
-                                                                                         |> Seq.filter (fun argument -> argument.HasTypeDefinition)
-                                                                                         |> Seq.map (fun argument -> argument.TypeDefinition)))
-                                |> Seq.map innerFind
-                                |> Seq.concat
-                                |> Seq.cache //Debug
+                        yield!
+                            topEntity.UnionCases
+                            |> Seq.collect (fun case -> case.UnionCaseFields
+                                                        |> Seq.map (fun field -> field.FieldType)
+                                                        |> Seq.filter (fun type2 -> type2.HasTypeDefinition)
+                                                        |> Seq.collect (fun type2 -> type2.GenericArguments
+                                                                                     |> Seq.filter (fun argument -> argument.HasTypeDefinition)
+                                                                                     |> Seq.map (fun argument -> argument.TypeDefinition)))
+                            |> Seq.map innerFind
+                            |> Seq.concat
+                            |> Seq.cache //Debug
 
                         //TODO: how to find the nth generic?
 
