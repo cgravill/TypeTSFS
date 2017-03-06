@@ -171,7 +171,7 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
         match case with
         | JustName name -> sprintf "            %s%s: string;" name optional
         | Type singleType -> sprintf "            %s%s: %s;" case.DisplayName optional (typeToTS singleType)
-        | Types types -> sprintf "            %s%s: %s;" case.DisplayName optional "OnlySupportSingleTypeCases"
+        | Types types -> sprintf "            %s%s: %s;" case.DisplayName optional "ERROR_OnlySingleTypeCasesImplemented"
 
     let casesAsStringJsonNet (allCases:IList<FSharpUnionCase>) =
         allCases
