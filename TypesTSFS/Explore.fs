@@ -18,7 +18,7 @@ let rec unabbreviateEntity (possiblyAbbreviated:FSharpEntity) =
     else
         Some possiblyAbbreviated
 
-let findEntitites (startEntity:FSharpEntity) : seq<FSharpEntity> =
+let findEntitites (startEntity:FSharpEntity) =
     let entitiesSeen = System.Collections.Generic.HashSet<FSharpEntity>() //prevents rework and is the returned value
 
     let toExplore = System.Collections.Generic.Queue<FSharpEntity>() //work list
@@ -66,16 +66,10 @@ let findEntitites (startEntity:FSharpEntity) : seq<FSharpEntity> =
             |> Seq.iter recurisivelyAdd
         elif head.IsFSharpModule then
             head.MembersFunctionsAndValues
-            |> Seq.collect (fun module_ -> module_.CurriedParameterGroups)
-            |> Seq.collect id
-            |> Seq.map (fun parameter -> parameter.Type)
-            |> Seq.iter recurisivelyAdd
-
-            head.MembersFunctionsAndValues
-            |> Seq.map (fun module_ -> module_.ReturnParameter)
+            |> Seq.collect (fun module_ -> Seq.append (module_.CurriedParameterGroups |> Seq.collect id) (module_.ReturnParameter |> Seq.singleton))
             |> Seq.map (fun parameter -> parameter.Type)
             |> Seq.iter recurisivelyAdd
         elif head.IsFSharpAbbreviation then
             ()
 
-    entitiesSeen :> seq<FSharpEntity>
+    entitiesSeen :> seq<_>
