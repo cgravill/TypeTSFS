@@ -20,7 +20,7 @@ type Circle = {
 
     Assert.Equal("Shapes", moduleEntity.DisplayName)
 
-    let nestedEntities = Explore.findEntities moduleEntity |> Array.ofSeq
+    let nestedEntities = Explore.findEntitiesIterative moduleEntity |> Array.ofSeq
 
     let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
     
@@ -56,7 +56,7 @@ type Shape =
 
     Assert.Equal("Shapes", moduleEntity.DisplayName)
 
-    let nestedEntities = Explore.findEntities moduleEntity |> Array.ofSeq
+    let nestedEntities = Explore.findEntitiesIterative moduleEntity |> Array.ofSeq
 
     let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
     
@@ -99,7 +99,7 @@ type Reading = {
 
     Assert.Equal("Temperature", moduleEntity.DisplayName)
 
-    let nestedEntities = Explore.findEntities moduleEntity |> Array.ofSeq
+    let nestedEntities = Explore.findEntitiesIterative moduleEntity |> Array.ofSeq
 
     let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
     
@@ -137,7 +137,7 @@ type Point =
 
     Assert.Equal("Space", moduleEntity.DisplayName)
 
-    let nestedEntities = Explore.findEntities moduleEntity |> Array.ofSeq
+    let nestedEntities = Explore.findEntitiesIterative moduleEntity |> Array.ofSeq
 
     let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
 
@@ -150,6 +150,149 @@ type Point =
             TwoD?: number[];
             ThreeD?: number[];
             Special?: (number | boolean)[];
+        }
+    }"""
+
+    Assert.Equal(expected.[2..], output)
+
+[<Fact>]
+let ``Lists on unions``() =
+
+    let sampleText = """
+namespace Incept
+
+module Target =
+    type A = { x: int}
+    type B = { x: int}
+    type C = { x: int}
+
+    type NotUsed = { x: int}
+
+module Space =
+
+    type Point =
+        | OneD of Target.A list
+        | TwoD of Target.B list list
+        | ThreeD of Target.C list list list
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+
+    let moduleEntity = entities.[1]
+
+    Assert.Equal("Space", moduleEntity.DisplayName)
+
+    let nestedEntities = Explore.findEntitiesIterative moduleEntity |> Array.ofSeq
+
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
+
+    let expected =
+        """
+    export namespace sample {
+        export interface Space { }
+        export interface A {
+            x: number;
+        }
+        export interface B {
+            x: number;
+        }
+        export interface C {
+            x: number;
+        }
+        export interface Point {
+            OneD?: Array<Incept.Target.A>;
+            TwoD?: Array<Array<Incept.Target.B>>;
+            ThreeD?: Array<Array<Array<Incept.Target.C>>>;
+        }
+    }"""
+
+    Assert.Equal(expected.[2..], output)
+
+[<Fact>]
+let ``Trace deep generics``() =
+
+    let sampleText = """
+namespace Incept
+
+module Target =
+    type A = { x: int}
+    type B = { x: int}
+    type C = { x: int}
+
+    type NotUsed = { x: int}
+
+module Inception =
+    type Deep1 = { d1: Target.A[]; d2: Target.B[][]; d3: Target.C[][][] }
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+    let nestedEntities = Explore.findEntitiesIterative entities.[1] |> Array.ofSeq
+    //let nestedEntities = Explore.findEntities entities.[1] |> Array.ofSeq
+
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
+
+    let expected =
+        """
+    export namespace sample {
+        export interface Inception { }
+        export interface Deep1 {
+            d1: Array<Incept.Target.A>;
+            d2: Array<Array<Incept.Target.B>>;
+            d3: Array<Array<Array<Incept.Target.C>>>;
+        }
+        export interface A {
+            x: number;
+        }
+        export interface B {
+            x: number;
+        }
+        export interface C {
+            x: number;
+        }
+    }"""
+
+    Assert.Equal(expected.[2..], output)
+
+[<Fact>]
+let ``Trace deep generics (lists)``() =
+
+    let sampleText = """
+namespace Incept
+
+module Target =
+    type A = { x: int}
+    type B = { x: int}
+    type C = { x: int}
+
+    type NotUsed = { x: int}
+
+module Inception =
+    type Deep1 = { d1: Target.A list; d2: Target.B list list; d3: Target.C list list list }
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+    let nestedEntities = Explore.findEntitiesIterative entities.[1] |> Array.ofSeq
+    //let nestedEntities = Explore.findEntities entities.[1] |> Array.ofSeq
+
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
+
+    let expected =
+        """
+    export namespace sample {
+        export interface Inception { }
+        export interface Deep1 {
+            d1: Array<Incept.Target.A>;
+            d2: Array<Array<Incept.Target.B>>;
+            d3: Array<Array<Array<Incept.Target.C>>>;
+        }
+        export interface A {
+            x: number;
+        }
+        export interface B {
+            x: number;
+        }
+        export interface C {
+            x: number;
         }
     }"""
 

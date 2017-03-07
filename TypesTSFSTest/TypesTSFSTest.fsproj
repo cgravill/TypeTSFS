@@ -74,7 +74,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="ProjectManager.fs" />
-    <Compile Include="Tests.fs" />
+    <Compile Include="ExploringTests.fs" />
     <Compile Include="WebSharperTests.fs" />
     <Compile Include="JsonNetTests.fs" />
     <None Include="JsonNetSandbox.fsx" />

@@ -22,7 +22,7 @@ type Shape =
 
     Assert.Equal("Shapes", moduleEntity.DisplayName)
 
-    let nestedEntities = Explore.findEntities moduleEntity
+    let nestedEntities = Explore.findEntitiesIterative moduleEntity
 
     let output = EmitTS.entityToString EmitTS.Style.JsonNet "bob" (nestedEntities |> Array.ofSeq)
     

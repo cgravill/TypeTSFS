@@ -50,14 +50,14 @@ let fromFSharpToTypeScript style projectFile moduleTargetName outputPath =
 
     let allOfThem =
         jsAPI
-        |> Explore.findEntities
+        |> Explore.findEntitiesIterative
         |> Seq.distinct
         |> Seq.sortBy(fun element -> element.DisplayName)
         |> Array.ofSeq
 
     let fewerOfThem =
         jsAPI
-        |> Explore.findEntities
+        |> Explore.findEntitiesIterative
         |> Seq.distinct
         |> Seq.filter(fun entity -> not entity.IsFSharpModule && not (isHiddenFunction entity)) 
         |> Seq.filter(fun entity -> not (entity.AccessPath.Contains "System.Collections.Generic") && not (entity.AccessPath.Contains "Microsoft.FSharp.Collections"))

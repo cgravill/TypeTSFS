@@ -12,10 +12,16 @@ let namedOrNumber name i =
     | "" -> ("p" + string i)
     | _ -> name
 
+let rec unabbreviate (possiblyAbbreviated:FSharpType) =
+    if possiblyAbbreviated.IsAbbreviation then
+        possiblyAbbreviated.AbbreviatedType
+    else
+        possiblyAbbreviated
+
 let rec typeToTS (fsharpType:FSharpType) =
 
     if fsharpType.IsAbbreviation then
-        typeToTS fsharpType.AbbreviatedType
+        typeToTS (unabbreviate fsharpType)
     else
         if fsharpType.IsGenericParameter then
             fsharpType.GenericParameter.DisplayName
