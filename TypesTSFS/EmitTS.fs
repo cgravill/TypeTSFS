@@ -62,6 +62,8 @@ let rec typeToTS (fsharpType:FSharpType) =
                     | "Set"
                     | "IEnumerable" //TODO: check this really goes to array
                     | "[]" -> "Array"
+                    | "char"
+                    | "Char"
                     | "string"
                     | "String" -> "string"
                     | "Unit" -> "void"

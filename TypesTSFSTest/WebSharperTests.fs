@@ -262,7 +262,7 @@ namespace Incept
 module Target =
     type A = { x: int}
     type B = { x: int}
-    type C = { x: int}
+    type C = { x: char}
 
     type NotUsed = { x: int}
 
@@ -292,7 +292,7 @@ module Inception =
             x: number;
         }
         export interface C {
-            x: number;
+            x: string;
         }
     }"""
 
