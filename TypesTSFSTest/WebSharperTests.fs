@@ -20,7 +20,7 @@ type Circle = {
 
     Assert.Equal("Shapes", moduleEntity.DisplayName)
 
-    let nestedEntities = Explore.findEntitiesIterative moduleEntity |> Array.ofSeq
+    let nestedEntities = Explore.findEntitites moduleEntity |> Array.ofSeq
 
     let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
     
@@ -56,7 +56,7 @@ type Shape =
 
     Assert.Equal("Shapes", moduleEntity.DisplayName)
 
-    let nestedEntities = Explore.findEntitiesIterative moduleEntity |> Array.ofSeq
+    let nestedEntities = Explore.findEntitites moduleEntity |> Array.ofSeq
 
     let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
     
@@ -99,7 +99,7 @@ type Reading = {
 
     Assert.Equal("Temperature", moduleEntity.DisplayName)
 
-    let nestedEntities = Explore.findEntitiesIterative moduleEntity |> Array.ofSeq
+    let nestedEntities = Explore.findEntitites moduleEntity |> Array.ofSeq
 
     let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
     
@@ -137,7 +137,7 @@ type Point =
 
     Assert.Equal("Space", moduleEntity.DisplayName)
 
-    let nestedEntities = Explore.findEntitiesIterative moduleEntity |> Array.ofSeq
+    let nestedEntities = Explore.findEntitites moduleEntity |> Array.ofSeq
 
     let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
 
@@ -182,7 +182,7 @@ module Space =
 
     Assert.Equal("Space", moduleEntity.DisplayName)
 
-    let nestedEntities = Explore.findEntitiesIterative moduleEntity |> Array.ofSeq
+    let nestedEntities = Explore.findEntitites moduleEntity |> Array.ofSeq
 
     let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
 
@@ -226,7 +226,7 @@ module Inception =
     """
 
     let entities = ProjectManager.extractEntitites sampleText
-    let nestedEntities = Explore.findEntitiesIterative entities.[1] |> Array.ofSeq
+    let nestedEntities = Explore.findEntitites entities.[1] |> Array.ofSeq
     //let nestedEntities = Explore.findEntities entities.[1] |> Array.ofSeq
 
     let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
@@ -271,7 +271,7 @@ module Inception =
     """
 
     let entities = ProjectManager.extractEntitites sampleText
-    let nestedEntities = Explore.findEntitiesIterative entities.[1] |> Array.ofSeq
+    let nestedEntities = Explore.findEntitites entities.[1] |> Array.ofSeq
     //let nestedEntities = Explore.findEntities entities.[1] |> Array.ofSeq
 
     let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities

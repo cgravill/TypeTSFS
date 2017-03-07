@@ -18,7 +18,7 @@ let rec unabbreviateEntity (possiblyAbbreviated:FSharpEntity) =
     else
         Some possiblyAbbreviated
 
-let findEntitiesIterative (startEntity:FSharpEntity) : seq<FSharpEntity> =
+let findEntitites (startEntity:FSharpEntity) : seq<FSharpEntity> =
     let entitiesSeen = System.Collections.Generic.HashSet<FSharpEntity>() //prevents rework and is the returned value
 
     let toExplore = System.Collections.Generic.Queue<FSharpEntity>() //work list

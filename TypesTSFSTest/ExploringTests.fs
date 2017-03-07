@@ -33,7 +33,7 @@ let fff () = xxx + xxx
 
     entity.DisplayName =! "M"
 
-    let entities = Explore.findEntitiesIterative entity
+    let entities = Explore.findEntitites entity
 
     //Seq.length entities =! 4
 
@@ -56,7 +56,7 @@ module Inception =
     """
 
     let entities = ProjectManager.extractEntitites sampleText
-    let nestedEntities = Explore.findEntitiesIterative entities.[1] |> Seq.cache
+    let nestedEntities = Explore.findEntitites entities.[1] |> Seq.cache
 
     nestedEntities |> has <| "A"
     nestedEntities |> has <| "B"
@@ -78,7 +78,7 @@ module Inception =
     """
 
     let entities = ProjectManager.extractEntitites sampleText
-    let nestedEntities = Explore.findEntitiesIterative entities.[1] |> Seq.cache
+    let nestedEntities = Explore.findEntitites entities.[1] |> Seq.cache
 
     nestedEntities |> has <| "A"
     nestedEntities |> misses <| "NotUsed"
@@ -99,7 +99,7 @@ module Inception =
     """
 
     let entities = ProjectManager.extractEntitites sampleText
-    let nestedEntities = Explore.findEntitiesIterative entities.[1] |> Seq.cache
+    let nestedEntities = Explore.findEntitites entities.[1] |> Seq.cache
 
     nestedEntities |> has <| "A"
     nestedEntities |> misses <| "NotUsed"
