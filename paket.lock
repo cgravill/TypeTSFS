@@ -2,10 +2,10 @@ REDIRECTS: ON
 FRAMEWORK: NET451
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    FSharp.Compiler.Service (10.0.3)
+    FSharp.Compiler.Service (11.0.6)
       System.Collections.Immutable (>= 1.2)
       System.Reflection.Metadata (>= 1.4.1-beta-24227-04)
-    FSharp.Compiler.Service.ProjectCracker (10.0.3)
+    FSharp.Compiler.Service.ProjectCracker (11.0.6)
     FSharp.Core (4.0.0.1)
     FsUnit.xUnit (1.4.1)
       FSharp.Core (>= 3.1.2.5)
