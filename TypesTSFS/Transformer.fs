@@ -6,7 +6,7 @@ let checker = FSharpChecker.Create()
 
 let parseAndTypeCheckSingleFile (file, input) = 
     // Get context representing a stand-alone (script) file
-    let projOptions = 
+    let projOptions, _ = 
         checker.GetProjectOptionsFromScript(file, input)
         |> Async.RunSynchronously
 

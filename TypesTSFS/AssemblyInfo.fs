@@ -12,7 +12,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
 [<assembly: AssemblyProduct("TypesTSFS")>]
-[<assembly: AssemblyCopyright("Copyright ©  2016")>]
+[<assembly: AssemblyCopyright("Copyright ©  2017")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
 
@@ -22,7 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[<assembly: Guid("d9c767cc-651f-4272-b71e-cd64ee309205")>]
+[<assembly: Guid("a57ad55e-84c5-47e6-bd22-c4cbde87fc66")>]
 
 // Version information for an assembly consists of the following four values:
 // 
