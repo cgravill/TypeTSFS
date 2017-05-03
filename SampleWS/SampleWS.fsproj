@@ -48,7 +48,6 @@
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
-  <Import Project="..\.paket\paket.targets" />
   <ItemGroup>
     <Compile Include="Shapes.fs" />
     <Compile Include="JSAPI.fs" />
@@ -121,4 +120,5 @@
     </When>
   </Choose>
   <Import Project="..\packages\WebSharper\build\WebSharper.targets" Condition="Exists('..\packages\WebSharper\build\WebSharper.targets')" Label="Paket" />
+  <Import Project="..\.paket\paket.targets" />
 </Project>
