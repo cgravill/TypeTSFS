@@ -63,6 +63,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
+  <Import Project="..\.paket\paket.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.5.1'">
       <ItemGroup>
@@ -120,5 +121,4 @@
     </When>
   </Choose>
   <Import Project="..\packages\WebSharper\build\WebSharper.targets" Condition="Exists('..\packages\WebSharper\build\WebSharper.targets')" Label="Paket" />
-  <Import Project="..\.paket\paket.targets" />
 </Project>
