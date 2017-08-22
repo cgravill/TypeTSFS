@@ -44,6 +44,12 @@ let findEntitites (startEntity:FSharpEntity) =
     //Seed value for work
     add startEntity
 
+    let extractMembersAndFunctions (entity:FSharpEntity) =
+        entity.MembersFunctionsAndValues
+        |> Seq.collect (fun member_ -> Seq.append (member_.CurriedParameterGroups |> Seq.collect id) (member_.ReturnParameter |> Seq.singleton))
+        |> Seq.map (fun parameter -> parameter.Type)
+        |> Seq.iter recurisivelyAdd
+
     while toExplore.Count > 0 do
 
         let head = toExplore.Dequeue()
@@ -65,11 +71,10 @@ let findEntitites (startEntity:FSharpEntity) =
             |> Seq.map (fun field -> field.FieldType)
             |> Seq.iter recurisivelyAdd
         elif head.IsFSharpModule then
-            head.MembersFunctionsAndValues
-            |> Seq.collect (fun module_ -> Seq.append (module_.CurriedParameterGroups |> Seq.collect id) (module_.ReturnParameter |> Seq.singleton))
-            |> Seq.map (fun parameter -> parameter.Type)
-            |> Seq.iter recurisivelyAdd
+            extractMembersAndFunctions head
         elif head.IsFSharpAbbreviation then
             ()
+        elif head.IsClass then
+            extractMembersAndFunctions head
 
     entitiesSeen :> seq<_>

@@ -103,3 +103,23 @@ module Inception =
 
     nestedEntities |> has <| "A"
     nestedEntities |> misses <| "NotUsed"
+
+[<Fact>]
+let ``Trace through constructors/members``() =
+
+    let sampleText = """
+namespace Incept
+
+module Target =
+    type A = { x: int}
+    type NotUsed = { x: int}
+
+module Inception =
+    type Example(a:Target.A) = class end
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+    let nestedEntities = entities.[1] |> Explore.findEntitites |> Seq.cache
+
+    nestedEntities |> has <| "A"
+    nestedEntities |> misses <| "NotUsed"
