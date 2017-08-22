@@ -30,3 +30,7 @@ type ShapeWith =
     | [<Name "Rectangle">] Rectangle of Rectangle
     | [<Name "Square">] Square of Square
     | [<Name "MaybeCircle">] MaybeCircle of Circle option
+
+
+type ParallelogramClass(left:int) =
+    member x.Area() = left * left

@@ -297,3 +297,35 @@ module Inception =
     }"""
 
     Assert.Equal(expected.[2..], output)
+
+
+[<Fact>]
+let ``Export classes``() =
+
+    let sampleText = """
+module Shapes
+
+type Parallelogram(left:int) =
+    member x.Area() = left * left
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+
+    let moduleEntity = entities.[0]
+
+    Assert.Equal("Shapes", moduleEntity.DisplayName)
+
+    let nestedEntities = Explore.findEntitites moduleEntity |> Array.ofSeq
+
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
+
+    let expected =
+        """
+    export namespace sample {
+        export interface Parallelogram {
+            Area : () => number;
+        }
+        export interface Shapes { }
+    }"""
+
+    Assert.Equal(expected.[2..], output)

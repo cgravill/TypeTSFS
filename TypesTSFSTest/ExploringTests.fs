@@ -125,7 +125,7 @@ module Inception =
     nestedEntities |> misses <| "NotUsed"
 
 [<Fact>]
-let ``Trace through fields``() =
+let ``Trace through properties``() =
 
     let sampleText = """
 namespace Incept

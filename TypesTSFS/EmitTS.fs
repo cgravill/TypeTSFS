@@ -116,8 +116,17 @@ let nameAndParametersToString name parameters =
     else
         name + "<" + (String.concat ", " (genericParamtersToDisplay parameters)) + ">"
 
+let argumentsToString (arguments:IList<IList<FSharpParameter>>) =
+    arguments
+    |> Seq.mapi(fun i parameterGroup -> (namedOrNumber parameterGroup.[0].DisplayName i) + ": " + (typeToTS parameterGroup.[0].Type))
+    |> String.concat ", "
+
 let entityNameToString (entity:FSharpEntity) = nameAndParametersToString entity.DisplayName entity.GenericParameters
 let memberNameToString (entity:FSharpMemberOrFunctionOrValue) = nameAndParametersToString entity.DisplayName entity.GenericParameters
+let membersToString members =
+    members
+    |> Seq.map (fun member_ -> sprintf "            %s : (%s) => %s;" (memberNameToString member_) (argumentsToString (Seq.skip 1 member_.CurriedParameterGroups |> Seq.toArray)) (typeToTS member_.ReturnParameter.Type))
+    |> String.concat "\r\n"
 
 let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) =
 
@@ -235,8 +244,14 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
 
     let classes = restrictedEntities |> Seq.filter (fun entity -> entity.IsFSharp && (entity.IsClass || entity.IsInterface))
 
-    //TODO: pull out more details
-    let classesAsString = classes |> Seq.map (fun class_ -> sprintf "        export interface %s { }" (entityNameToString class_))
+    let classesAsString =
+        classes |> Seq.map (fun class_ ->
+            //TODO: fields
+            let members = class_.MembersFunctionsAndValues |> Seq.filter (fun entity -> entity.IsMember && (not entity.IsConstructor)) //TODO: deal with constructors
+            if members |> Seq.isEmpty then
+                sprintf "        export interface %s { }" (entityNameToString class_)
+            else
+                sprintf "        export interface %s {\r\n%s\r\n        }" (entityNameToString class_) (membersToString members))
 
 
     //Opaques -- hidden implementations
@@ -255,10 +270,7 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
     let withModuleWrapping = sprintf "    export namespace %s {\r\n%s\r\n    }" namespacename contents
     withModuleWrapping
 
-let argumentsToString (arguments:IList<IList<FSharpParameter>>) =
-    arguments
-    |> Seq.mapi(fun i parameterGroup -> (namedOrNumber parameterGroup.[0].DisplayName i) + ": " + (typeToTS parameterGroup.[0].Type))
-    |> String.concat ", "
+
 
 let functionAsStrings (functions:seq<FSharpMemberOrFunctionOrValue>) =
     functions
