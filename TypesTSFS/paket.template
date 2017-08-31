@@ -1,7 +1,7 @@
 type project
 licenseUrl https://github.com/cgravill/TypesTSFS/blob/master/LICENSE
 projectUrl https://github.com/cgravill/TypesTSFS
-version 0.1.1
+version 0.1.2
 authors Colin Gravill
 include-referenced-projects true
 description
@@ -12,7 +12,7 @@ tags
 
 files
 	bin/Release/* ==> tools
-	../LICENSE ==> /
+	../LICENSE ==> .
 
 excludedgroups
 	main
