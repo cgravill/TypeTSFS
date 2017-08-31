@@ -1,0 +1,10 @@
+type project
+licenseUrl http://opensource.org/licenses/MIT
+version 0.1
+authors Colin Gravill
+include-referenced-projects true
+
+dependencies
+	FSharp.Compiler.Service ~> 13.0.0
+	FSharp.Compiler.Service.ProjectCracker ~> 13.0.0
+
