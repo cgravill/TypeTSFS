@@ -25,7 +25,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\TypesTSFS.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>--projectfilepath "../../../SampleWS/SampleWS.fsproj"</StartArguments>
+    <StartArguments>--style websharper --projectfilepath "../../../SampleWS/SampleWS.fsproj" --outputpath "./sample.d.ts"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
