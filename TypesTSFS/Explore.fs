@@ -74,7 +74,7 @@ let findEntitites (startEntity:FSharpEntity) =
             extractMembersAndFunctions head
         elif head.IsFSharpAbbreviation then
             ()
-        elif head.IsClass && head.IsFSharp then
+        elif head.IsClass && head.IsFSharp then //Only extract F# for now, may need C# support later
             extractMembersAndFunctions head
 
     entitiesSeen :> seq<_>
