@@ -78,6 +78,39 @@ type Shape =
     Assert.Equal(expected.[2..], output)
 
 [<Fact>]
+let ``Simple Discriminated union as string``() =
+
+    let sampleText = """
+module Shapes
+
+type Shape = 
+    | Circle
+    | Triangle
+    | Square
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+
+    let moduleEntity = entities.[0]
+
+    Assert.Equal("Shapes", moduleEntity.DisplayName)
+
+    let nestedEntities = Explore.findEntitites moduleEntity |> Array.ofSeq
+
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
+    
+    //WebSharper instance: 
+
+    let expected =
+        """
+    export namespace sample {
+        export interface Shapes { }
+        export type Shape = "Circle" | "Triangle" | "Square"
+    }"""
+
+    Assert.Equal(expected.[2..], output)
+
+[<Fact>]
 let ``Units of measure are ignored``() =
     //Units of measure aren't implemented in TypeScript
     //https://github.com/Microsoft/TypeScript/issues/364
