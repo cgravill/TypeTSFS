@@ -247,7 +247,9 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
     let classesAsString =
         classes |> Seq.map (fun class_ ->
             //TODO: fields
-            let members = class_.MembersFunctionsAndValues |> Seq.filter (fun entity -> entity.IsMember && (not entity.IsConstructor)) //TODO: deal with constructors
+            let members =
+                class_.MembersFunctionsAndValues
+                |> Seq.filter (fun entity -> entity.IsMember && (not entity.IsConstructor) && (not entity.IsProperty)) //TODO: deal with constructors
             if members |> Seq.isEmpty then
                 sprintf "        export interface %s { }" (entityNameToString class_)
             else

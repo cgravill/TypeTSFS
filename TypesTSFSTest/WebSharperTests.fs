@@ -111,6 +111,41 @@ type Shape =
     Assert.Equal(expected.[2..], output)
 
 [<Fact>]
+let ``Extract properties from objects``() =
+
+    let sampleText = """
+module Shapes
+
+type NamedObject<'a>(name:string,data:'a) =
+    member s.Data with get() = data
+    member s.Name with get() = name
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+
+    let moduleEntity = entities.[0]
+
+    Assert.Equal("Shapes", moduleEntity.DisplayName)
+
+    let nestedEntities = Explore.findEntitites moduleEntity |> Array.ofSeq
+
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
+    
+    //WebSharper instance: 
+
+    let expected =
+        """
+    export namespace sample {
+        export interface NamedObject<a> {
+            Data : () => a;
+            Name : () => string;
+        }
+        export interface Shapes { }
+    }"""
+
+    Assert.Equal(expected.[2..], output)
+
+[<Fact>]
 let ``Units of measure are ignored``() =
     //Units of measure aren't implemented in TypeScript
     //https://github.com/Microsoft/TypeScript/issues/364
