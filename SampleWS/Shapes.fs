@@ -34,3 +34,5 @@ type ShapeWith =
 
 type ParallelogramClass(left:int) =
     member x.Area() = left * left
+
+    member x.Area(multiplier:int) = left * left * multiplier

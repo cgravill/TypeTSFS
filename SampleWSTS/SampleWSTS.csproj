@@ -7,7 +7,9 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <WebSharperProject>Bundle</WebSharperProject>
-    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
+    <WebSharperBundleOutputDir>Content</WebSharperBundleOutputDir>
+    <WebSharperDeadCodeElimination>False</WebSharperDeadCodeElimination>
+    <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <OutputPath>bin</OutputPath>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <DebugType>full</DebugType>

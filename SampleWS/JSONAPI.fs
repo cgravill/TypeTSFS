@@ -1,5 +1,5 @@
 ﻿//This should also be code generatable
-[<ReflectedDefinition>]
+[<WebSharper.JavaScript>]
 module JSONAPI
 
 (*open WebSharper

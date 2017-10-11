@@ -21,6 +21,8 @@ NUGET
     System.Runtime.Serialization.Json (4.3)
     Unquote (3.2)
     WebSharper (4.0.193.110)
+    WebSharper.FSharp (4.0.193.110)
+      WebSharper (4.0.193.110)
     xunit (2.1)
       xunit.assert (2.1)
       xunit.core (2.1)

@@ -259,3 +259,4 @@ SampleWS/Scripts/
 SampleWSTS/Content/
 SampleJNTS/*.js
 SampleJNTS/*.map
+/SampleWS/Content

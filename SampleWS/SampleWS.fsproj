@@ -5,7 +5,9 @@
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{1cacbf55-019b-4037-b509-53bd34afa3c0}</ProjectGuid>
-    <WebSharperProject>Site</WebSharperProject>
+    <WebSharperProject>Bundle</WebSharperProject>
+    <WebSharperBundleOutputDir>Content</WebSharperBundleOutputDir>
+    <WebSharperDeadCodeElimination>False</WebSharperDeadCodeElimination>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -52,6 +54,7 @@
     <Compile Include="Shapes.fs" />
     <Compile Include="JSAPI.fs" />
     <Compile Include="JSONAPI.fs" />
+    <Compile Include="EmptySPAEntryPoint.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
@@ -120,4 +123,5 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Import Project="..\packages\WebSharper.FSharp\build\WebSharper.FSharp.targets" Condition="Exists('..\packages\WebSharper.FSharp\build\WebSharper.FSharp.targets')" Label="Paket" />
 </Project>

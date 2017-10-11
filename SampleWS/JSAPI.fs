@@ -1,4 +1,4 @@
-[<ReflectedDefinition>]
+[<WebSharper.JavaScript>]
 module JSAPI
 
 open WebSharper
