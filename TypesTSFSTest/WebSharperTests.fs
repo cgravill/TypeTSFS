@@ -106,7 +106,7 @@ type Shape =
     export namespace sample {
         export interface Shapes { }
         export type Shape = "Circle" | "Triangle" | "Square"
-        const ShapeSelect = ["Circle", "Triangle", "Square"]
+        export const ShapeSelect = ["Circle", "Triangle", "Square"]
     }"""
 
     Assert.Equal(expected.[2..], output)

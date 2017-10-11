@@ -250,7 +250,7 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
             | Style.WebSharper, NamesAndNumbers cases ->
                 sprintf "        export type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases)
             | Style.WebSharper, AllJustNames cases ->
-                sprintf "        export type %s = %s\r\n        const %sSelect = [%s]" union.DisplayName (namesAndNumbersCasesAsString cases) union.DisplayName (namesAndNumbersArrayAsString cases))
+                sprintf "        export type %s = %s\r\n        export const %sSelect = [%s]" union.DisplayName (namesAndNumbersCasesAsString cases) union.DisplayName (namesAndNumbersArrayAsString cases))
 
     //Classes
 
