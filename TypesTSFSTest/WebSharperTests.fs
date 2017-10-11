@@ -106,6 +106,7 @@ type Shape =
     export namespace sample {
         export interface Shapes { }
         export type Shape = "Circle" | "Triangle" | "Square"
+        const ShapeSelect = ["Circle", "Triangle", "Square"]
     }"""
 
     Assert.Equal(expected.[2..], output)
@@ -137,8 +138,8 @@ type NamedObject<'a>(name:string,data:'a) =
         """
     export namespace sample {
         export interface NamedObject<a> {
-            Data : () => a;
-            Name : () => string;
+            //Data : () => a;
+            //Name : () => string;
         }
         export interface Shapes { }
     }"""
@@ -391,7 +392,41 @@ type Parallelogram(left:int) =
         """
     export namespace sample {
         export interface Parallelogram {
-            Area : () => number;
+            //Area : () => number;
+        }
+        export interface Shapes { }
+    }"""
+
+    Assert.Equal(expected.[2..], output)
+
+[<Fact>]
+let ``Function overloading``() =
+
+    let sampleText = """
+module Shapes
+
+type ParallelogramClass(left:int) =
+    member x.Area() = left * left
+
+    member x.Area(multiplier:int) = left * left * multiplier
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+
+    let moduleEntity = entities.[0]
+
+    Assert.Equal("Shapes", moduleEntity.DisplayName)
+
+    let nestedEntities = Explore.findEntitites moduleEntity |> Array.ofSeq
+
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
+
+    let expected =
+        """
+    export namespace sample {
+        export interface ParallelogramClass {
+            //Area : () => number;
+            //Area : () => number;
         }
         export interface Shapes { }
     }"""

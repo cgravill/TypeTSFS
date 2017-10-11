@@ -27,6 +27,8 @@ let rec typeToTS (fsharpType:FSharpType) =
             fsharpType.GenericParameter.DisplayName
         elif fsharpType.IsFunctionType then
 
+            //Note: this doesn't correctly get the arguments, it's also problematic with overload name mangling
+
             let inputs = fsharpType.GenericArguments |> Seq.take (fsharpType.GenericArguments.Count - 1)
             let output = fsharpType.GenericArguments |> Seq.skip (fsharpType.GenericArguments.Count - 1) |> Seq.exactlyOne
 
@@ -122,7 +124,13 @@ let argumentsToString (arguments:IList<IList<FSharpParameter>>) =
     |> String.concat ", "
 
 let entityNameToString (entity:FSharpEntity) = nameAndParametersToString entity.DisplayName entity.GenericParameters
-let memberNameToString (entity:FSharpMemberOrFunctionOrValue) = nameAndParametersToString entity.DisplayName entity.GenericParameters
+let memberNameToString (entity:FSharpMemberOrFunctionOrValue) = 
+    let rest = nameAndParametersToString entity.DisplayName entity.GenericParameters
+    //Function types not reliably converted yet
+    if entity.IsMember && entity.FullType.IsFunctionType then
+        "//" + rest
+    else
+        rest
 let membersToString members =
     members
     |> Seq.map (fun member_ -> sprintf "            %s : (%s) => %s;" (memberNameToString member_) (argumentsToString (Seq.skip 1 member_.CurriedParameterGroups |> Seq.toArray)) (typeToTS member_.ReturnParameter.Type))
@@ -230,6 +238,8 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
     
     let namesAndNumbersCasesAsString = Seq.map nameOrNumberToString >> String.concat " | "
 
+    let namesAndNumbersArrayAsString = Seq.map nameOrNumberToString >> String.concat ", "
+
     let unionsAsString =
         unions
         |> Seq.map (fun union ->
@@ -237,8 +247,10 @@ let entityToString (style:Style) (namespacename:string) (nested:FSharpEntity[]) 
             | Style.JsonNet, ComplexTypes cases
             | Style.WebSharper, ComplexTypes cases -> sprintf "        export interface %s {\r\n%s\r\n        }" (entityNameToString union) (casesAsString cases)
             | Style.JsonNet, cases -> sprintf "        export interface %s { Case: %s }" union.DisplayName (caseNamesJsonNet cases)
-            | Style.WebSharper, NamesAndNumbers cases -> sprintf "        export type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases)
-            | Style.WebSharper, AllJustNames cases -> sprintf "        export type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases))
+            | Style.WebSharper, NamesAndNumbers cases ->
+                sprintf "        export type %s = %s" union.DisplayName (namesAndNumbersCasesAsString cases)
+            | Style.WebSharper, AllJustNames cases ->
+                sprintf "        export type %s = %s\r\n        const %sSelect = [%s]" union.DisplayName (namesAndNumbersCasesAsString cases) union.DisplayName (namesAndNumbersArrayAsString cases))
 
     //Classes
 

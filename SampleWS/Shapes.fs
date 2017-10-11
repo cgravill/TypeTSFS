@@ -1,4 +1,4 @@
-﻿[<ReflectedDefinition>]
+﻿[<WebSharper.JavaScript>]
 module Shapes
 
 open WebSharper
@@ -36,3 +36,5 @@ type ParallelogramClass(left:int) =
     member x.Area() = left * left
 
     member x.Area(multiplier:int) = left * left * multiplier
+
+    member x.Area(multiplier:float) = (float)left * (float)left * multiplier
