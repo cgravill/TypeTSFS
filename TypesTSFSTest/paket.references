@@ -1,9 +1,9 @@
 FsUnit.xUnit
+xunit
 xunit.core
 xunit.runner.console
 xunit.runner.visualstudio
 FSharp.Compiler.Service
-FSharp.Compiler.Service.ProjectCracker
 Unquote
 FSharp.Core
 Newtonsoft.Json

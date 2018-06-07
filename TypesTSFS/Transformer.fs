@@ -1,6 +1,9 @@
 ﻿module Transformer
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open System.Xml.Linq
+open System.IO
+open System.Reflection
 
 let checker = FSharpChecker.Create()
 
@@ -34,15 +37,111 @@ let isHiddenFunction (possiblyAbbreviated:FSharpEntity) =
     else
         false
 
+//The options were previously created via the ProjectCracker, however, this is now not maintained and fails
+//https://github.com/fsharp/FSharp.Compiler.Service/issues/624#issuecomment-328497857
+//Instead we do by hand for now, consider using https://github.com/daveaglick/Buildalyzer
+let projectOptions normalisedProjectPath =
+
+    let text = System.IO.File.ReadAllText normalisedProjectPath
+
+    let directory = System.IO.Path.GetDirectoryName normalisedProjectPath
+    
+    let exeDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+
+    let document = XDocument.Parse text
+
+    let files =
+        document.Descendants()
+        |> Seq.filter (fun node ->
+            node.Name.LocalName = "Compile")
+        |> Seq.map (fun compileNode ->
+            let includeAttribute = compileNode.Attributes() |> Seq.find (fun (attribute:XAttribute) -> attribute.Name.LocalName = "Include")
+            Path.GetFullPath(System.IO.Path.Combine(directory, includeAttribute.Value)))
+    
+    (*let projects =
+        document.Descendants()
+        |> Seq.filter (fun node ->
+            node.Name.LocalName = "ProjectReference")
+        |> Seq.map (fun compileNode ->
+            let includeAttribute = compileNode.Attributes() |> Seq.find (fun (attribute:XAttribute) -> attribute.Name.LocalName = "Include")
+            Path.GetFullPath(System.IO.Path.Combine(directory, includeAttribute.Value)))
+
+    let projectsReferences =
+        document.Descendants()
+        |> Seq.filter (fun node ->
+            node.Name.LocalName = "ProjectReference")
+        |> Seq.map (fun compileNode ->
+            let includeAttribute = compileNode.Attributes() |> Seq.find (fun (attribute:XAttribute) -> attribute.Name.LocalName = "Include")
+            let projPath = Path.GetFullPath(System.IO.Path.Combine(directory, includeAttribute.Value))
+            let projectName = Path.GetFileNameWithoutExtension projPath
+            let projDirectory = Path.GetDirectoryName(projPath)
+            projDirectory + "\\bin\\debug\\" + projectName + ".dll"
+            )*)
+    
+    //http://fsharp.github.io/FSharp.Compiler.Service/project.html#Analyzing-multiple-projects
+    //options.ReferencedProjects
+
+    let sysLib nm = 
+        if System.Environment.OSVersion.Platform = System.PlatformID.Win32NT then
+            // file references only valid on Windows
+            // Hardcoded framework, should be read instead
+            System.Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) +
+            @"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\" + nm + ".dll"
+        else
+            let sysDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
+            let (++) a b = System.IO.Path.Combine(a,b)
+            sysDir ++ nm + ".dll" 
+
+    let localLib name =
+        Path.GetFullPath(Path.Combine(exeDirectory, name) + ".dll")
+  
+    let references =
+                [ sysLib "mscorlib" 
+                  sysLib "System"
+                  sysLib "System.Core"
+                  localLib "FSharp.Core"
+                ]
+
+    let options =
+        checker.GetProjectOptionsFromCommandLineArgs(
+            normalisedProjectPath,
+            [| //yield "--simpleresolution" 
+               yield "--noframework" 
+               yield "--debug:full" 
+               yield "--define:DEBUG" 
+               yield "--optimize-" 
+               yield "--out:" + "XYZ.dll"
+               yield "--doc:test.xml" 
+               yield "--warn:3" 
+               yield "--fullpaths" 
+               yield "--flaterrors" 
+               yield "--target:library" 
+               //for project in projectsReferences do
+               //    yield "-r:" + project
+               for file in files do
+                   yield file
+               for r in references do 
+                   yield "-r:" + r
+
+            |])
+    
+    
+
+    options
+
 let fromFSharpToTypeScript style projectFile moduleTargetName outputPath =
 
     let normalisedProjectPath = System.IO.Path.GetFullPath projectFile
 
     if not (System.IO.File.Exists normalisedProjectPath) then failwithf "Project not found: %s" normalisedProjectPath
 
-    let projectOptions = ProjectCracker.GetProjectOptionsFromProjectFile(normalisedProjectPath)
+    //let projectOptions = ProjectCracker.GetProjectOptionsFromProjectFile(normalisedProjectPath)
+
+    let projectOptions = projectOptions normalisedProjectPath
 
     let checkResults = checker.ParseAndCheckProject projectOptions |> Async.RunSynchronously
+
+    //checkResults.Errors |> Array.iter (printfn "%O")
 
     let entities = checkResults.AssemblySignature.Entities
 
@@ -69,13 +168,13 @@ let fromFSharpToTypeScript style projectFile moduleTargetName outputPath =
 
     //Debugging
 
-    (*let debugEntities =
+    let debugEntities =
         allOfThem
-        |> Array.filter (fun element -> element.TryFullName.IsSome && element.TryFullName.Value.Contains  "bob" )
+        |> Array.filter (fun element -> element.TryFullName.IsSome && element.TryFullName.Value.Contains  "test_crn_deterministic")
        
-    let debugEntity = debugEntities |> Array.exactlyOne
+    (*let debugEntity = debugEntities |> Array.exactlyOne*)
 
-    let fewerOfThem =
+    (*let fewerOfThem =
         Explore.findEntities debugEntity
         |> Array.ofSeq*)
         
@@ -98,6 +197,9 @@ let fromFSharpToTypeScript style projectFile moduleTargetName outputPath =
         "        export interface FSharpMap<K, V> { }\r\n" +
         "        export interface Dictionary<K, V> { }\r\n" +
         "        export interface FSharpTuple { }\r\n" +
+        "    }\r\n" +
+        "    export namespace System {\r\n" +
+        "        export interface Object { }\r\n" +
         "    }"
 
     let functionAsStrings = EmitTS.functionAsStrings jsAPI.MembersFunctionsAndValues

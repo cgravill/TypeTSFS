@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open System.IO
+open System.Reflection
 
 let extractEntitites sourceText =
 
@@ -16,24 +17,32 @@ let extractEntitites sourceText =
     let projFileName = Path.ChangeExtension(base2, ".fsproj")
     File.WriteAllText(fileName1, sourceText)
 
-    let projectOptions = 
+    let directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+
+    let projectOptions =
+
+        //TODO: all these references should be determined from the project under test, not this
+
         let sysLib nm = 
             if System.Environment.OSVersion.Platform = System.PlatformID.Win32NT then
                 // file references only valid on Windows
                 System.Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) +
-                @"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\" + nm + ".dll"
+                @"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\" + nm + ".dll"
             else
                 let sysDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
                 let (++) a b = System.IO.Path.Combine(a,b)
                 sysDir ++ nm + ".dll" 
+        
+        
+        let localLib name =
+            Path.Combine(directory, name) + ".dll"
 
-        let fsCore4300() = 
-            if System.Environment.OSVersion.Platform = System.PlatformID.Win32NT then
-                // file references only valid on Windows
-                System.Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) +
-                @"\Reference Assemblies\Microsoft\FSharp\.NETFramework\v4.0\4.3.0.0\FSharp.Core.dll"  
-            else 
-                sysLib "FSharp.Core"
+        let references =
+                 [ sysLib "mscorlib" 
+                   sysLib "System"
+                   sysLib "System.Core"
+                   localLib "FSharp.Core"
+                 ]
 
         checker.GetProjectOptionsFromCommandLineArgs
            (projFileName,
@@ -49,11 +58,7 @@ let extractEntitites sourceText =
                yield "--flaterrors" 
                yield "--target:library" 
                yield fileName1
-               let references =
-                 [ sysLib "mscorlib" 
-                   sysLib "System"
-                   sysLib "System.Core"
-                   fsCore4300() ]
+
                for r in references do 
                      yield "-r:" + r |])
 
