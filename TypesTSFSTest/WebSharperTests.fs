@@ -37,6 +37,40 @@ type Circle = {
     Assert.Equal(expected.[2..], output)
 
 [<Fact>]
+let ``Record with option``() =
+
+    let sampleText = """
+module Shapes
+
+type Circle = {
+    Radius: int;
+    Numbers: Option<List<int>>;
+}
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+
+    let moduleEntity = entities.[0]
+
+    Assert.Equal("Shapes", moduleEntity.DisplayName)
+
+    let nestedEntities = Explore.findEntitites moduleEntity |> Array.ofSeq
+
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
+    
+    let expected =
+        """
+    export namespace sample {
+        export interface Shapes { }
+        export interface Circle {
+            Radius: number;
+            Numbers?: Array<number>;
+        }
+    }"""
+
+    Assert.Equal(expected.[2..], output)
+
+[<Fact>]
 let ``Discriminated union``() =
 
     let sampleText = """

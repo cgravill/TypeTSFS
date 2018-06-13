@@ -84,7 +84,8 @@ let onlyExportedEntities (possibleEntities: FSharpEntity[]) =
     possibleEntities
     |> Array.filter(fun entity ->
         match entity.DisplayName with
-        | "List" -> false
+        | "List"
+        | "Option" -> false
         | _ -> true)
 
 let parameterAndTypeToTS parameterName (fsharpType:FSharpType) =
@@ -92,11 +93,11 @@ let parameterAndTypeToTS parameterName (fsharpType:FSharpType) =
     //We have to check it's not some of these or will throw on accessing TypeDefinition
     //TODO: handle abbreviations
     let isOption =
-        fsharpType.IsAbbreviation &&
+        //fsharpType.IsAbbreviation &&
         not fsharpType.IsGenericParameter &&
         not fsharpType.IsFunctionType &&
         not fsharpType.IsTupleType &&
-        fsharpType.TypeDefinition.DisplayName = "option" //Bit much to assume this is the right "option"
+        (fsharpType.TypeDefinition.DisplayName = "option" || fsharpType.TypeDefinition.DisplayName = "Option") //Bit much to assume this is the right "option"
 
     if isOption then
         sprintf "%s?: %s" parameterName (typeToTS fsharpType.GenericArguments.[0])
