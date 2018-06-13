@@ -84,6 +84,26 @@ module Inception =
     nestedEntities |> misses <| "NotUsed"
 
 [<Fact>]
+let ``Don't extract private functions``() =
+
+    let sampleText = """
+namespace Incept
+
+module Target =
+    type A = { x: int}
+    type NotUsed = { x: int}
+
+module Inception =
+    let private calculator (progress:Target.A -> unit) = 7
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+    let nestedEntities = Explore.findEntitites entities.[1] |> Seq.cache
+
+    nestedEntities |> misses <| "A"
+    nestedEntities |> misses <| "NotUsed"
+
+[<Fact>]
 let ``Trace through abbreviations``() =
 
     let sampleText = """

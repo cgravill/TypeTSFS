@@ -46,6 +46,7 @@ let findEntitites (startEntity:FSharpEntity) =
 
     let extractMembersAndFunctions (entity:FSharpEntity) =
         entity.MembersFunctionsAndValues
+        |> Seq.filter (fun functionOrValue -> functionOrValue.Accessibility.IsPublic)
         |> Seq.collect (fun member_ -> Seq.append (member_.CurriedParameterGroups |> Seq.collect id) (member_.ReturnParameter |> Seq.singleton))
         |> Seq.map (fun parameter -> parameter.Type)
         |> Seq.iter recurisivelyAdd
