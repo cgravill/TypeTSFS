@@ -86,60 +86,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="..\.paket\paket.targets" />
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.1'">
-      <ItemGroup>
-        <Reference Include="WebSharper.Collections">
-          <HintPath>..\packages\WebSharper\lib\net461\WebSharper.Collections.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="WebSharper.Control">
-          <HintPath>..\packages\WebSharper\lib\net461\WebSharper.Control.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="WebSharper.Core">
-          <HintPath>..\packages\WebSharper\lib\net461\WebSharper.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="WebSharper.Core.JavaScript">
-          <HintPath>..\packages\WebSharper\lib\net461\WebSharper.Core.JavaScript.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="WebSharper.InterfaceGenerator">
-          <HintPath>..\packages\WebSharper\lib\net461\WebSharper.InterfaceGenerator.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="WebSharper.JQuery">
-          <HintPath>..\packages\WebSharper\lib\net461\WebSharper.JQuery.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="WebSharper.JavaScript">
-          <HintPath>..\packages\WebSharper\lib\net461\WebSharper.JavaScript.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="WebSharper.Main">
-          <HintPath>..\packages\WebSharper\lib\net461\WebSharper.Main.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="WebSharper.Sitelets">
-          <HintPath>..\packages\WebSharper\lib\net461\WebSharper.Sitelets.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="WebSharper.Web">
-          <HintPath>..\packages\WebSharper\lib\net461\WebSharper.Web.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
+  <PropertyGroup>
+    <PreBuildEvent>xcopy /Y /R /E /I "$(SolutionDir)SampleWS\Content\*.*" "$(ProjectDir)Content\"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
