@@ -146,6 +146,42 @@ type Shape =
     Assert.Equal(expected.[2..], output)
 
 [<Fact>]
+let ``Discriminated unions on options nullable``() =
+
+    let sampleText = """
+module Shapes
+
+type Shape = 
+    | Circle of string
+    | Triangle of Option<string>
+    """
+
+    let entities = ProjectManager.extractEntitites sampleText
+
+    let moduleEntity = entities.[0]
+
+    Assert.Equal("Shapes", moduleEntity.DisplayName)
+
+    let nestedEntities = Explore.findEntitites moduleEntity |> Array.ofSeq
+
+    let output = EmitTS.entityToString EmitTS.Style.WebSharper "sample" nestedEntities
+    
+    //WebSharper instance: 
+
+    let expected =
+        """
+    export namespace sample {
+        export interface Shapes { }
+        export interface Shape {
+            Circle?: string;
+            Triangle?: string | null;
+        }
+    }"""
+
+    Assert.Equal(expected.[2..], output)
+
+
+[<Fact>]
 let ``Extract properties from objects``() =
 
     let sampleText = """

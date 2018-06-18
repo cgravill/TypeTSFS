@@ -75,6 +75,8 @@ let rec typeToTS (fsharpType:FSharpType) =
 
                 if stem = "number" then
                     stem
+                elif stem = "Microsoft.FSharp.Core.Option" then
+                    typeToTS fsharpType.GenericArguments.[0] + " | null"
                 elif fsharpType.GenericArguments.Count > 0 then
                     stem + "<" + (fsharpType.GenericArguments |> Seq.map typeToTS |> String.concat ", ") + ">"
                 else
