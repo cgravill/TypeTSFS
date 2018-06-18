@@ -58,7 +58,7 @@ let projectOptions normalisedProjectPath =
             let includeAttribute = compileNode.Attributes() |> Seq.find (fun (attribute:XAttribute) -> attribute.Name.LocalName = "Include")
             Path.GetFullPath(System.IO.Path.Combine(directory, includeAttribute.Value)))
     
-    (*let projects =
+    let projects =
         document.Descendants()
         |> Seq.filter (fun node ->
             node.Name.LocalName = "ProjectReference")
@@ -76,7 +76,11 @@ let projectOptions normalisedProjectPath =
             let projectName = Path.GetFileNameWithoutExtension projPath
             let projDirectory = Path.GetDirectoryName(projPath)
             projDirectory + "\\bin\\debug\\" + projectName + ".dll"
-            )*)
+            )
+    
+    projectsReferences
+    |> Seq.filter( not << System.IO.File.Exists)
+    |> Seq.iter (printfn "Missing file: %s")
     
     //http://fsharp.github.io/FSharp.Compiler.Service/project.html#Analyzing-multiple-projects
     //options.ReferencedProjects
@@ -101,6 +105,8 @@ let projectOptions normalisedProjectPath =
                   sysLib "System.Core"
                   localLib "FSharp.Core"
                 ]
+    
+    //JavaScript
 
     let options =
         checker.GetProjectOptionsFromCommandLineArgs(
@@ -109,6 +115,7 @@ let projectOptions normalisedProjectPath =
                yield "--noframework" 
                yield "--debug:full" 
                yield "--define:DEBUG" 
+               yield "--define:JavaScript" //TODO: get this via reading project 
                yield "--optimize-" 
                yield "--out:" + "XYZ.dll"
                yield "--doc:test.xml" 
@@ -116,16 +123,14 @@ let projectOptions normalisedProjectPath =
                yield "--fullpaths" 
                yield "--flaterrors" 
                yield "--target:library" 
-               //for project in projectsReferences do
-               //    yield "-r:" + project
+               for project in projectsReferences do
+                   yield "-r:" + project
                for file in files do
                    yield file
                for r in references do 
                    yield "-r:" + r
 
             |])
-    
-    
 
     options
 
