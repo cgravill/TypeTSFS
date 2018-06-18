@@ -111,25 +111,25 @@ let projectOptions normalisedProjectPath =
     let options =
         checker.GetProjectOptionsFromCommandLineArgs(
             normalisedProjectPath,
-            [| //yield "--simpleresolution" 
-               yield "--noframework" 
-               yield "--debug:full" 
-               yield "--define:DEBUG" 
-               yield "--define:JavaScript" //TODO: get this via reading project 
-               yield "--optimize-" 
-               yield "--out:" + "XYZ.dll"
-               yield "--doc:test.xml" 
-               yield "--warn:3" 
-               yield "--fullpaths" 
-               yield "--flaterrors" 
-               yield "--target:library" 
-               for project in projectsReferences do
-                   yield "-r:" + project
-               for file in files do
-                   yield file
-               for r in references do 
-                   yield "-r:" + r
-
+            [|
+                //yield "--simpleresolution"
+                yield "--noframework" 
+                yield "--debug:full" 
+                yield "--define:DEBUG" 
+                yield "--define:JavaScript" //TODO: get this via reading project 
+                yield "--optimize-" 
+                yield "--out:" + "XYZ.dll"
+                yield "--doc:test.xml" 
+                yield "--warn:3" 
+                yield "--fullpaths" 
+                yield "--flaterrors" 
+                yield "--target:library" 
+                for project in projectsReferences do
+                    yield "-r:" + project
+                for file in files do
+                    yield file
+                for r in references do 
+                    yield "-r:" + r
             |])
 
     options
