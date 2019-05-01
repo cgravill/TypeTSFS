@@ -1,6 +1,6 @@
 ﻿module Transformer
 
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 open System.Xml.Linq
 open System.IO
 open System.Reflection
@@ -75,7 +75,7 @@ let projectOptions normalisedProjectPath =
             let projPath = Path.GetFullPath(System.IO.Path.Combine(directory, includeAttribute.Value))
             let projectName = Path.GetFileNameWithoutExtension projPath
             let projDirectory = Path.GetDirectoryName(projPath)
-            projDirectory + "\\bin\\debug\\" + projectName + ".dll"
+            projDirectory + "\\bin\\debug\\netstandard2.0\\" + projectName + ".dll"
             )
     
     projectsReferences

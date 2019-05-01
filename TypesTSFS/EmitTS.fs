@@ -1,6 +1,6 @@
 ﻿module EmitTS
 
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 type IList<'a> = System.Collections.Generic.IList<'a>
 
 type Style = 

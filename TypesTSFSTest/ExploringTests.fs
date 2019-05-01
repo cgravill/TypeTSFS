@@ -2,7 +2,7 @@
 
 open Xunit
 open Swensen.Unquote
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 
 let find entities named = entities |> Seq.tryFind (fun (entity:FSharpEntity) -> entity.DisplayName = named) |> Option.isSome
 let has entities named =

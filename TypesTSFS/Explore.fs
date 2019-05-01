@@ -1,6 +1,6 @@
 ﻿module Explore
 
-open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.Compiler.SourceCodeServices
 
 
 let rec unabbreviateType (possiblyAbbreviated:FSharpType) =
