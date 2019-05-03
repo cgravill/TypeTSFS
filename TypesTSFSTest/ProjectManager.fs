@@ -27,7 +27,7 @@ let extractEntitites sourceText =
             if System.Environment.OSVersion.Platform = System.PlatformID.Win32NT then
                 // file references only valid on Windows
                 System.Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) +
-                @"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\" + nm + ".dll"
+                @"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\" + nm + ".dll"
             else
                 let sysDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
                 let (++) a b = System.IO.Path.Combine(a,b)

@@ -3,3 +3,5 @@ FSharp.Compiler.Service
 System.Collections.Immutable
 System.Reflection.Metadata
 Argu
+NETStandard.Library
+NuGet.Configuration

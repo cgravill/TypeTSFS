@@ -58,13 +58,13 @@ let projectOptions normalisedProjectPath =
             let includeAttribute = compileNode.Attributes() |> Seq.find (fun (attribute:XAttribute) -> attribute.Name.LocalName = "Include")
             Path.GetFullPath(System.IO.Path.Combine(directory, includeAttribute.Value)))
     
-    let projects =
+    (*let projects =
         document.Descendants()
         |> Seq.filter (fun node ->
             node.Name.LocalName = "ProjectReference")
         |> Seq.map (fun compileNode ->
             let includeAttribute = compileNode.Attributes() |> Seq.find (fun (attribute:XAttribute) -> attribute.Name.LocalName = "Include")
-            Path.GetFullPath(System.IO.Path.Combine(directory, includeAttribute.Value)))
+            Path.GetFullPath(System.IO.Path.Combine(directory, includeAttribute.Value)))*)
 
     let projectsReferences =
         document.Descendants()
@@ -75,12 +75,12 @@ let projectOptions normalisedProjectPath =
             let projPath = Path.GetFullPath(System.IO.Path.Combine(directory, includeAttribute.Value))
             let projectName = Path.GetFileNameWithoutExtension projPath
             let projDirectory = Path.GetDirectoryName(projPath)
-            projDirectory + "\\bin\\debug\\netstandard2.0\\" + projectName + ".dll"
+            projDirectory + """\bin\debug\netstandard2.0\""" + projectName + ".dll"
             )
     
     projectsReferences
     |> Seq.filter( not << System.IO.File.Exists)
-    |> Seq.iter (printfn "Missing file: %s")
+    |> Seq.iter (printfn "Missing file: %s (this will likely cause incomplete type resolution)")
     
     //http://fsharp.github.io/FSharp.Compiler.Service/project.html#Analyzing-multiple-projects
     //options.ReferencedProjects
@@ -89,18 +89,37 @@ let projectOptions normalisedProjectPath =
         if System.Environment.OSVersion.Platform = System.PlatformID.Win32NT then
             // file references only valid on Windows
             // Hardcoded framework, should be read instead
-            System.Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) +
-            @"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\" + nm + ".dll"
+            //System.Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) +
+            //@"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\" + nm + ".dll"
+
+            let settings = NuGet.Configuration.Settings.LoadDefaultSettings(null)
+            let nugetPath = NuGet.Configuration.SettingsUtility.GetGlobalPackagesFolder(settings)
+
+            let fileName = nm + ".dll"
+
+            let referencePath = Path.Combine(nugetPath, """netstandard.library\2.0.3\build\netstandard2.0\ref\""")
+
+            if not (Directory.Exists referencePath) then
+                failwithf "Cannot find '%s' ...has the version been upgraded?" referencePath
+
+            Path.Combine(referencePath, fileName)
         else
+            printfn "fall back for files, not well tested"
+
             let sysDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
             let (++) a b = System.IO.Path.Combine(a,b)
             sysDir ++ nm + ".dll" 
+
+    projectsReferences
+    |> Seq.filter( not << System.IO.File.Exists)
+    |> Seq.iter (printfn "Missing file: %s (this will likely cause incomplete type resolution)")
 
     let localLib name =
         Path.GetFullPath(Path.Combine(exeDirectory, name) + ".dll")
   
     let references =
-                [ sysLib "mscorlib" 
+                [ sysLib "mscorlib"
+                  sysLib "netstandard" 
                   sysLib "System"
                   sysLib "System.Core"
                   localLib "FSharp.Core"
