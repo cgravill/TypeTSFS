@@ -1,10 +1,12 @@
-type project
+type file
+id TypesTSFS
 licenseUrl https://github.com/cgravill/TypesTSFS/blob/master/LICENSE
 license MIT
 projectUrl https://github.com/cgravill/TypesTSFS
-version 0.3.0
+version 0.4.0
 authors Colin Gravill
-include-referenced-projects true
+
+# include-referenced-projects true
 description
   Map F# to TypeScript to allow safe interoperability
 tags
@@ -12,7 +14,7 @@ tags
 
 
 files
-	bin/Release/* ==> tools
+	bin/Release/netcoreapp2.2/publish/* ==> tools
 	../LICENSE ==> .
 
 excludedgroups

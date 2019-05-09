@@ -26,9 +26,20 @@ let extractEntitites sourceText =
         let sysLib nm = 
             if System.Environment.OSVersion.Platform = System.PlatformID.Win32NT then
                 // file references only valid on Windows
-                System.Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) +
-                @"\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\" + nm + ".dll"
+                let settings = NuGet.Configuration.Settings.LoadDefaultSettings(null)
+                let nugetPath = NuGet.Configuration.SettingsUtility.GetGlobalPackagesFolder(settings)
+
+                let fileName = nm + ".dll"
+
+                let referencePath = Path.Combine(nugetPath, """netstandard.library\2.0.3\build\netstandard2.0\ref\""")
+
+                if not (Directory.Exists referencePath) then
+                    failwithf "Cannot find '%s' ...has the version been upgraded?" referencePath
+
+                Path.Combine(referencePath, fileName)
             else
+                printfn "fall back for files, not well tested"
+                
                 let sysDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
                 let (++) a b = System.IO.Path.Combine(a,b)
                 sysDir ++ nm + ".dll" 
@@ -38,11 +49,14 @@ let extractEntitites sourceText =
             Path.Combine(directory, name) + ".dll"
 
         let references =
-                 [ sysLib "mscorlib" 
-                   sysLib "System"
-                   sysLib "System.Core"
-                   localLib "FSharp.Core"
-                 ]
+            [
+                sysLib "mscorlib"
+                sysLib "netstandard" 
+                sysLib "System"
+                sysLib "System.Core"
+                sysLib "System.Runtime"
+                localLib "FSharp.Core"
+            ]
 
         checker.GetProjectOptionsFromCommandLineArgs
            (projFileName,

@@ -261,3 +261,4 @@ SampleJNTS/*.js
 SampleJNTS/*.map
 /SampleWS/Content
 TypesTSFS/temp
+/TypesTSFS/Properties/launchSettings.json

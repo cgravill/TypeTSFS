@@ -118,12 +118,14 @@ let projectOptions normalisedProjectPath =
         Path.GetFullPath(Path.Combine(exeDirectory, name) + ".dll")
   
     let references =
-                [ sysLib "mscorlib"
-                  sysLib "netstandard" 
-                  sysLib "System"
-                  sysLib "System.Core"
-                  localLib "FSharp.Core"
-                ]
+        [
+            sysLib "mscorlib"
+            sysLib "netstandard" 
+            sysLib "System"
+            sysLib "System.Core"
+            sysLib "System.Runtime"
+            localLib "FSharp.Core"
+        ]
     
     //JavaScript
 
