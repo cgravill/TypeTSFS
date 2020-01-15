@@ -1,12 +1,12 @@
-version 5.203.2
+version 5.241.6
 
 source https://api.nuget.org/v3/index.json
 
-framework: netstandard2.0, netcore2.2
+framework: netstandard2.0, netcore3.1
 redirects: on
 storage: none
 
-nuget FSharp.Core 4.6.2 redirects: force
+nuget FSharp.Core 4.7.0 redirects: force
 nuget FSharp.Compiler.Service ~> 28.0.0
 nuget System.Collections.Immutable ~> 1.5.0
 nuget System.Reflection.Metadata ~> 1.6.0

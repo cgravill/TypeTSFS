@@ -1,27 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{1BEC2F6C-4A62-4149-BC7C-0C38CF27215D}"
 	ProjectSection(SolutionItems) = preProject
 		paket.dependencies = paket.dependencies
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SampleWS", "SampleWS\SampleWS.fsproj", "{1CACBF55-019B-4037-B509-53BD34AFA3C0}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "SampleWS", "SampleWS\SampleWS.fsproj", "{1CACBF55-019B-4037-B509-53BD34AFA3C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleWSTS", "SampleWSTS\SampleWSTS.csproj", "{10000561-9766-4647-A01B-D6F0ADF564B7}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TypesTSFSTest", "TypesTSFSTest\TypesTSFSTest.fsproj", "{836EC0D7-FA90-45C1-86B8-7A8354384CF1}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "TypesTSFSTest", "TypesTSFSTest\TypesTSFSTest.fsproj", "{836EC0D7-FA90-45C1-86B8-7A8354384CF1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{75680FB9-52EF-474A-9647-42B8C06BDAD0}"
 	ProjectSection(SolutionItems) = preProject
 		paket.dependencies = paket.dependencies
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleJNTS", "SampleJNTS\SampleJNTS.csproj", "{663D6576-A340-47B7-9CD4-EB140FC7D89E}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TypesTSFS", "TypesTSFS\TypesTSFS.fsproj", "{A57AD55E-84C5-47E6-BD22-C4CBDE87FC66}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "TypesTSFS", "TypesTSFS\TypesTSFS.fsproj", "{A57AD55E-84C5-47E6-BD22-C4CBDE87FC66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,18 +29,10 @@ Global
 		{1CACBF55-019B-4037-B509-53BD34AFA3C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1CACBF55-019B-4037-B509-53BD34AFA3C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1CACBF55-019B-4037-B509-53BD34AFA3C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{10000561-9766-4647-A01B-D6F0ADF564B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{10000561-9766-4647-A01B-D6F0ADF564B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{10000561-9766-4647-A01B-D6F0ADF564B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{10000561-9766-4647-A01B-D6F0ADF564B7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{836EC0D7-FA90-45C1-86B8-7A8354384CF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{836EC0D7-FA90-45C1-86B8-7A8354384CF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{836EC0D7-FA90-45C1-86B8-7A8354384CF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{836EC0D7-FA90-45C1-86B8-7A8354384CF1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{663D6576-A340-47B7-9CD4-EB140FC7D89E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{663D6576-A340-47B7-9CD4-EB140FC7D89E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{663D6576-A340-47B7-9CD4-EB140FC7D89E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{663D6576-A340-47B7-9CD4-EB140FC7D89E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A57AD55E-84C5-47E6-BD22-C4CBDE87FC66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A57AD55E-84C5-47E6-BD22-C4CBDE87FC66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A57AD55E-84C5-47E6-BD22-C4CBDE87FC66}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -52,5 +40,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ABB84604-D560-489B-97A4-715523EC1FEE}
 	EndGlobalSection
 EndGlobal
